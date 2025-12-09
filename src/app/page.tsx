@@ -1,39 +1,19 @@
 'use client';
 
-import type { NextPage } from 'next';
-import { useUser } from '@/firebase';
-
-import { courses } from '@/lib/data';
 import { MainLayout } from '@/components/layout/main-layout';
-import { DashboardHeader } from '@/components/dashboard/dashboard-header';
-import { CourseCard } from '@/components/dashboard/course-card';
-import { Skeleton } from '@/components/ui/skeleton';
 
-const DashboardPage: NextPage = () => {
-  const { user, isUserLoading } = useUser();
-
-  const userName = user?.displayName || user?.email || 'Student';
-
+export default function HomePage() {
   return (
     <MainLayout>
-      {isUserLoading ? (
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <Skeleton className="h-9 w-64 mb-2" />
-            <Skeleton className="h-5 w-80" />
-          </div>
-          <Skeleton className="h-10 w-32" />
-        </div>
-      ) : (
-        <DashboardHeader userName={userName} />
-      )}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {courses.map((course) => (
-          <CourseCard key={course.id} course={course} />
-        ))}
+      <div className="flex flex-col items-center justify-center h-full text-center">
+        <h1 className="text-4xl font-bold font-headline">Welcome to Your Academy</h1>
+        <p className="mt-4 text-lg text-muted-foreground">
+          Let's build your vision together.
+        </p>
+        <p className="mt-2 text-md text-muted-foreground">
+          Tell me what you'd like to see on this page.
+        </p>
       </div>
     </MainLayout>
   );
-};
-
-export default DashboardPage;
+}
