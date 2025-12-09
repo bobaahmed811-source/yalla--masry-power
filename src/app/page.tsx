@@ -63,6 +63,7 @@ export default function RoyalDashboard() {
           comic_studio_button: "استوديو القصص المصورة",
           museum_button: "المتحف الافتراضي",
           store_button: "متجر البرديات",
+          tutor_button: "المعلم الخصوصي",
           logout_button: "تسجيل الخروج",
           login_button: "تسجيل الدخول"
       },
@@ -79,6 +80,7 @@ export default function RoyalDashboard() {
           comic_studio_button: "Comic Studio",
           museum_button: "Virtual Museum",
           store_button: "Papyri Store",
+          tutor_button: "AI Tutor",
           logout_button: "Log Out",
           login_button: "Log In",
       },
@@ -107,6 +109,7 @@ export default function RoyalDashboard() {
         if(querySelector('#comic-studio-button-text')) querySelector('#comic-studio-button-text').textContent = texts.comic_studio_button;
         if(querySelector('#museum-button-text')) querySelector('#museum-button-text').textContent = texts.museum_button;
         if(querySelector('#store-button-text')) querySelector('#store-button-text').textContent = texts.store_button;
+        if(querySelector('#tutor-button-text')) querySelector('#tutor-button-text').textContent = texts.tutor_button;
 
         if (user) {
           if (querySelector('#auth-link-text')) querySelector('#auth-link-text').textContent = texts.logout_button;
@@ -203,7 +206,7 @@ export default function RoyalDashboard() {
                 </button>
             </div>
 
-             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <Link href="/comic-studio" id="comic-studio-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-amber-400 text-amber-400">
                     <i className="fas fa-paint-brush text-xl ml-3"></i>
                     <span id="comic-studio-button-text">استوديو القصص المصورة</span>
@@ -215,6 +218,10 @@ export default function RoyalDashboard() {
                 <Link href="/store" id="store-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-emerald-400 text-emerald-400">
                     <i className="fas fa-store text-xl ml-3"></i>
                     <span id="store-button-text">متجر البرديات</span>
+                </Link>
+                <Link href="/tutor" id="tutor-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-rose-400 text-rose-400">
+                    <i className="fas fa-user-graduate text-xl ml-3"></i>
+                    <span id="tutor-button-text">المعلم الخصوصي</span>
                 </Link>
             </div>
 
@@ -324,4 +331,6 @@ export default function RoyalDashboard() {
 }
 
     
+    
+
     
