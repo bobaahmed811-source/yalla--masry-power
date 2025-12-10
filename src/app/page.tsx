@@ -187,6 +187,25 @@ export default function HomePage() {
             {/* Specialization Sections */}
             <div className="space-y-12">
 
+                {/* Challenges Section */}
+                <div>
+                    <h2 className="text-3xl royal-title text-center mb-4">قسم التحديات</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <Link href="/dialogue-challenge" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-purple-400 text-purple-400">
+                            <i className="fas fa-comments text-xl ml-3"></i>
+                            <span>تحدي حوار السوق</span>
+                        </Link>
+                        <Link href="/pronunciation-challenge" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-pink-400 text-pink-400">
+                            <i className="fas fa-bullhorn text-xl ml-3"></i>
+                            <span>تحديات قوة حتشبسوت</span>
+                        </Link>
+                        <Link href="/word-scramble" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-indigo-400 text-indigo-400">
+                            <i className="fas fa-random text-xl ml-3"></i>
+                            <span>تحدي خلط الكلمات</span>
+                        </Link>
+                    </div>
+                </div>
+                
                 {/* Archaeology and Tourism Section */}
                 <div>
                     <h2 className="text-3xl royal-title text-center mb-4">ديوان الآثار والسياحة</h2>
@@ -195,17 +214,9 @@ export default function HomePage() {
                             <i className="fas fa-landmark text-xl ml-3"></i>
                             <span>المتحف الافتراضي</span>
                         </Link>
-                        <Link href="/dialogue-challenge" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-purple-400 text-purple-400">
-                            <i className="fas fa-comments text-xl ml-3"></i>
-                            <span>تحدي حوار السوق</span>
-                        </Link>
-                         <Link href="/pronunciation-challenge" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-pink-400 text-pink-400">
-                            <i className="fas fa-bullhorn text-xl ml-3"></i>
-                            <span>تحديات قوة حتشبسوت</span>
-                        </Link>
                     </div>
                 </div>
-                
+
                 {/* Business and Professional Section */}
                 <div>
                     <h2 className="text-3xl royal-title text-center mb-4">ديوان الأعمال والاحتراف</h2>
@@ -233,20 +244,9 @@ export default function HomePage() {
                             <i className="fas fa-volume-up text-xl ml-3"></i>
                             <span>خزانة الأصوات</span>
                         </Link>
-                    </div>
-                </div>
-
-                {/* Royal Kitchen Section */}
-                <div>
-                    <h2 className="text-3xl royal-title text-center mb-4">المطبخ الملكي</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <Link href="#" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-red-400 text-red-400">
+                         <Link href="#" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-red-400 text-red-400">
                             <i className="fas fa-utensils text-xl ml-3"></i>
                             <span>وصفات فرعونية (قريباً)</span>
-                        </Link>
-                        <Link href="/word-scramble" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-indigo-400 text-indigo-400">
-                            <i className="fas fa-random text-xl ml-3"></i>
-                            <span>تحدي خلط الكلمات</span>
                         </Link>
                     </div>
                 </div>
@@ -386,4 +386,5 @@ export default function HomePage() {
   );
 }
 
+    
     
