@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, ArrowRight, GraduationCap } from 'lucide-react';
+import { Star, ArrowRight, GraduationCap, Loader2 } from 'lucide-react';
 
 interface Instructor {
   id: string;
@@ -88,7 +88,12 @@ export default function InstructorsPage() {
           </p>
         </header>
 
-        {isLoading && <p className="text-center text-lg text-sand-ochre">جاري استدعاء سجلات المعلمات من ديوان المملكة...</p>}
+        {isLoading && (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
+                <p className="text-center text-lg text-sand-ochre ml-4">جاري استدعاء سجلات المعلمات من ديوان المملكة...</p>
+            </div>
+        )}
         {error && <p className="text-center text-lg text-red-400">حدث خطأ ملكي أثناء استدعاء السجلات: {error.message}</p>}
 
         <main>
@@ -97,6 +102,11 @@ export default function InstructorsPage() {
               <InstructorCard key={instructor.id} instructor={instructor} />
             ))}
           </div>
+          {!isLoading && instructors?.length === 0 && (
+            <div className="text-center py-16">
+                 <p className="text-xl text-sand-ochre">لا توجد معلمات مسجلات في الديوان حالياً. يرجى العودة لاحقاً.</p>
+            </div>
+          )}
         </main>
 
         <footer className="mt-12 text-center">

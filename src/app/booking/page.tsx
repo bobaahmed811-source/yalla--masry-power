@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Star, Clock, Tag, CalendarCheck, CheckCircle, Crown } from 'lucide-react';
+import { Star, Clock, Tag, CalendarCheck, CheckCircle, Crown, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Define the type for an instructor from Firestore
@@ -117,26 +117,22 @@ export default function BookingPage() {
       setBookingStatus('idle');
   }
 
-  if (isLoadingInstructors) {
-    return <div className="text-center text-white p-10">جاري استدعاء سجلات المعلمات...</div>;
-  }
+  const renderContent = () => {
+    if (isLoadingInstructors) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
+                <p className="text-center text-lg text-sand-ochre ml-4">جاري استدعاء سجلات المعلمات...</p>
+            </div>
+        );
+    }
 
-  if (instructorsError) {
-    return <div className="text-center text-red-400 p-10">حدث خطأ: {instructorsError.message}</div>;
-  }
-
-  return (
-    <div className="min-h-screen bg-nile-dark p-4 md:p-8 flex items-start justify-center" style={{ direction: 'rtl' }}>
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl dashboard-card text-white">
-        
-        <div className="p-6 md:p-8 border-b-4 border-gold-accent bg-nile/50 rounded-t-xl text-center">
-          <h1 className="text-4xl font-black royal-title mb-2">حجز درس فرعوني خاص 🔱</h1>
-          <p className="text-gray-300 text-lg">اختر الوقت المناسب لكِ من جداول المعلمات المعتمدات.</p>
-        </div>
-
-        <div className="p-6 md:p-8">
-        
-        {bookingStatus === 'idle' && (
+    if (instructorsError) {
+        return <p className="text-center text-red-500 py-10">حدث خطأ ملكي: {instructorsError.message}</p>;
+    }
+    
+    if (bookingStatus === 'idle') {
+        return (
             <div className="space-y-8">
               {Object.keys(scheduleByDate).length > 0 ? Object.keys(scheduleByDate).map(dateKey => (
                 <div key={dateKey}>
@@ -170,9 +166,11 @@ export default function BookingPage() {
                 </div>
               )) : <p className="text-center text-sand-ochre py-10">لا توجد مواعيد متاحة حالياً. يرجى المراجعة لاحقاً.</p>}
             </div>
-        )}
+        )
+    }
 
-        {bookingStatus === 'confirming' && selectedLesson && (
+    if (bookingStatus === 'confirming' && selectedLesson) {
+        return (
              <Card className="bg-nile border border-sand-ochre p-8 max-w-2xl mx-auto">
                 <CardHeader>
                     <CardTitle className="text-3xl royal-title text-center mb-4">مراجعة وتأكيد الحجز</CardTitle>
@@ -200,9 +198,11 @@ export default function BookingPage() {
                     </div>
                 </CardContent>
              </Card>
-        )}
-        
-        {bookingStatus === 'confirmed' && selectedLesson && (
+        )
+    }
+    
+    if (bookingStatus === 'confirmed' && selectedLesson) {
+        return (
             <Card className="bg-nile border border-green-400 p-8 text-center max-w-2xl mx-auto">
                 <CardHeader>
                     <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4"/>
@@ -218,8 +218,23 @@ export default function BookingPage() {
                     </div>
                 </CardContent>
             </Card>
-        )}
+        )
+    }
 
+    return null; // Default return if no state matches
+  }
+
+  return (
+    <div className="min-h-screen bg-nile-dark p-4 md:p-8 flex items-start justify-center" style={{ direction: 'rtl' }}>
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl dashboard-card text-white">
+        
+        <div className="p-6 md:p-8 border-b-4 border-gold-accent bg-nile/50 rounded-t-xl text-center">
+          <h1 className="text-4xl font-black royal-title mb-2">حجز درس فرعوني خاص 🔱</h1>
+          <p className="text-gray-300 text-lg">اختر الوقت المناسب لكِ من جداول المعلمات المعتمدات.</p>
+        </div>
+
+        <div className="p-6 md:p-8">
+            {renderContent()}
         </div>
       </div>
     </div>
