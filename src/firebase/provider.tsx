@@ -186,3 +186,5 @@ export const useUser = (includeFirestore = false): UserHookResult => {
   
   return { user, isUserLoading, userError };
 };
+
+  

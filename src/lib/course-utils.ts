@@ -27,7 +27,10 @@ export async function createInitialProgress(firestore: Firestore, userId: string
   const coursesSnapshot = await getDocs(coursesQuery);
 
   if (coursesSnapshot.empty) {
-    throw new Error("No courses available to start progress.");
+    console.warn("No courses available to start progress. Progress document not created.");
+    // In a real app, you might want to handle this more gracefully.
+    // For now, we just won't create a progress doc if no courses exist.
+    return;
   }
 
   const firstCourse = coursesSnapshot.docs[0];
@@ -38,7 +41,9 @@ export async function createInitialProgress(firestore: Firestore, userId: string
   const lessonsSnapshot = await getDocs(lessonsQuery);
 
   if (lessonsSnapshot.empty) {
-    throw new Error(`Course ${courseId} has no lessons.`);
+     console.warn(`Course ${courseId} has no lessons. Progress document not created.`);
+     // If the first course has no lessons, we also can't start progress.
+     return;
   }
 
   const firstLessonId = lessonsSnapshot.docs[0].id;
@@ -86,3 +91,5 @@ export async function updateProgress(firestore: Firestore, userId: string, cours
     currentLessonId: nextLesson ? nextLesson.id : '', // Empty string indicates course completion.
   });
 }
+
+  
