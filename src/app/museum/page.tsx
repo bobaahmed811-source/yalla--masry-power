@@ -12,7 +12,8 @@ export default function MuseumPage() {
     const infoPanelRef = useRef<HTMLDivElement>(null);
     const reportModalRef = useRef<HTMLDivElement>(null);
     const blockerRef = useRef<HTMLDivElement>(null);
-    const debugPanelRef = useRef<HTMLDivElement>(null);
+    const joystickRef = useRef<HTMLDivElement>(null);
+    const joystickHandleRef = useRef<HTMLDivElement>(null);
 
     // Use useState for artifact data to make it reactive
     const [artifacts, setArtifacts] = useState<Artifacts>(ARTIFACT_DATA);
@@ -49,6 +50,11 @@ export default function MuseumPage() {
 
         markersMap: {} as { [key: string]: HTMLDivElement },
         tempVector: new THREE.Vector3(),
+
+        joystickActive: false,
+        joystickStartX: 0,
+        joystickStartY: 0,
+
     }).current;
 
     const alertMessage = useCallback((message: string, type: 'error' | 'success' | 'info') => {
@@ -144,7 +150,7 @@ export default function MuseumPage() {
             state.camera.quaternion.setFromEuler(state.euler);
             
             const speed = 150.0;
-            if (!state.isBlocked && !state.isReportVisible && state.isMoving) {
+            if (!state.isBlocked && !state.isReportVisible && (state.isMoving || state.joystickActive)) {
                 const forward = state.forwardVector.clone().applyQuaternion(state.camera.quaternion);
                 forward.y = 0;
                 forward.normalize();
@@ -273,6 +279,7 @@ export default function MuseumPage() {
 
         const onStartClick = () => {
             if (blockerRef.current) blockerRef.current.classList.add('hidden');
+            if (joystickRef.current) joystickRef.current.classList.remove('hidden');
             state.isBlocked = false;
             if (state.renderer) state.renderer.domElement.focus();
             document.getElementById('report-button')?.classList.remove('hidden');
@@ -354,6 +361,53 @@ export default function MuseumPage() {
                 state.camera.aspect = window.innerWidth / window.innerHeight;
                 state.camera.updateProjectionMatrix();
                 state.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        };
+        
+        // --- Joystick Logic ---
+        const onJoystickStart = (e: React.TouchEvent | React.MouseEvent) => {
+            e.preventDefault();
+            state.joystickActive = true;
+            const touch = 'touches' in e ? e.touches[0] : e;
+            state.joystickStartX = touch.clientX;
+            state.joystickStartY = touch.clientY;
+        };
+
+        const onJoystickMove = (e: React.TouchEvent | React.MouseEvent) => {
+            if (!state.joystickActive) return;
+            e.preventDefault();
+            
+            const handle = joystickHandleRef.current;
+            if (!handle) return;
+
+            const touch = 'touches' in e ? e.touches[0] : e;
+            const deltaX = touch.clientX - state.joystickStartX;
+            const deltaY = touch.clientY - state.joystickStartY;
+            const distance = Math.min(60, Math.sqrt(deltaX * deltaX + deltaY * deltaY));
+            const angle = Math.atan2(deltaY, deltaX);
+
+            handle.style.transform = `translate(${distance * Math.cos(angle)}px, ${distance * Math.sin(angle)}px)`;
+
+            // Dead zone
+            if (distance < 10) {
+                 state.moveForward = state.moveBackward = state.moveLeft = state.moveRight = false;
+                 return;
+            }
+
+            // Determine direction
+            const threshold = Math.PI / 4; // 45 degrees
+            state.moveForward = (angle > -Math.PI + threshold && angle < -threshold);
+            state.moveBackward = (angle > threshold && angle < Math.PI - threshold);
+            state.moveLeft = (angle >= Math.PI - threshold || angle <= -Math.PI + threshold);
+            state.moveRight = (angle >= -threshold && angle <= threshold);
+        };
+
+        const onJoystickEnd = (e: React.TouchEvent | React.MouseEvent) => {
+            e.preventDefault();
+            state.joystickActive = false;
+            state.moveForward = state.moveBackward = state.moveLeft = state.moveRight = false;
+            if (joystickHandleRef.current) {
+                joystickHandleRef.current.style.transform = 'translate(0px, 0px)';
             }
         };
 
@@ -504,17 +558,25 @@ export default function MuseumPage() {
             </div>
 
             <div ref={markersContainerRef} id="markers-container"></div>
+             
+             <div 
+                ref={joystickRef} 
+                id="joystick-container"
+                className="hidden fixed bottom-10 left-10 w-32 h-32 bg-black bg-opacity-30 rounded-full z-20"
+                onTouchStart={e => state.isBlocked ? null : onJoystickStart(e)}
+                onTouchMove={e => state.isBlocked ? null : onJoystickMove(e)}
+                onTouchEnd={e => state.isBlocked ? null : onJoystickEnd(e)}
+             >
+                <div 
+                    ref={joystickHandleRef}
+                    id="joystick-handle" 
+                    className="absolute top-1/2 left-1/2 w-16 h-16 bg-gold-accent bg-opacity-50 rounded-full transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-100"
+                ></div>
+            </div>
 
             <button id="report-button" onClick={showReportModal} className="py-2 px-4 bg-yellow-600 text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors shadow-lg hidden fixed top-2.5 right-2.5 z-10">
                 <i className="fas fa-graduation-cap ml-2"></i> تقرير الطالب
             </button>
-            
-            <div ref={debugPanelRef} id="debug-panel" className="fixed top-10 right-10 z-[100] text-white bg-black/50 p-2 rounded hidden">
-                <div>FPS: <span id="fps-value">0</span></div>
-                <div>Dragging: <span id="dragging-status">No</span></div>
-                <div>Moving: <span id="moving-status">No</span></div>
-                <div>Camera Pos: <span id="cam-pos">0, 0, 0</span></div>
-            </div>
 
             <div ref={reportModalRef} id="academic-report-modal">
                 <div className="report-card">
@@ -547,7 +609,7 @@ export default function MuseumPage() {
                 </button>
                 <div id="control-instructions" className="text-white mt-12 text-lg p-4 bg-gray-800 bg-opacity-70 rounded-lg">
                     <p className="font-bold text-xl mb-2 text-[#FFD700]">دليل التحكم والرموز:</p>
-                    <p><strong>الحركة:</strong> W | A | S | D</p>
+                    <p><strong>الحركة:</strong> استخدم عصا التحكم (Joystick) على الشاشة أو أزرار W/A/S/D.</p>
                     <p><strong>النظر/الدوران:</strong> <span className="text-yellow-400">اضغط بزر الماوس الأيسر واسحب</span> أو <span className="text-yellow-400">اسحب بالإصبع</span> (ضروري لرؤية جميع التحف)</p>
                     <p><strong>التفاعل:</strong> ابحث عن الرموز الذهبية وانقر عليها لاستكشاف التحف الثمانية.</p>
                 </div>
