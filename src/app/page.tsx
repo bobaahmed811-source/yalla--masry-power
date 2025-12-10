@@ -66,6 +66,7 @@ export default function RoyalDashboard() {
           tutor_button: "المعلم الخصوصي",
           word_scramble_button: "تحدي الكلمات",
           dialogue_challenge_button: "تحدي الحوار",
+          placement_test_button: "ابدأ تحديد المستوى",
           logout_button: "تسجيل الخروج",
           login_button: "تسجيل الدخول"
       },
@@ -85,6 +86,7 @@ export default function RoyalDashboard() {
           tutor_button: "AI Tutor",
           word_scramble_button: "Word Scramble",
           dialogue_challenge_button: "Dialogue Challenge",
+          placement_test_button: "Start Placement Test",
           logout_button: "Log Out",
           login_button: "Log In",
       },
@@ -114,6 +116,7 @@ export default function RoyalDashboard() {
         if(querySelector('#tutor-button-text')) querySelector('#tutor-button-text').textContent = texts.tutor_button;
         if(querySelector('#word-scramble-button-text')) querySelector('#word-scramble-button-text').textContent = texts.word_scramble_button;
         if(querySelector('#dialogue-challenge-button-text')) querySelector('#dialogue-challenge-button-text').textContent = texts.dialogue_challenge_button;
+        if(querySelector('#placement-test-button-text')) querySelector('#placement-test-button-text').textContent = texts.placement_test_button;
 
         if (user) {
           if (querySelector('#auth-link-text')) querySelector('#auth-link-text').textContent = texts.logout_button;
@@ -210,7 +213,11 @@ export default function RoyalDashboard() {
                 </button>
             </div>
 
-             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+                <Link href="/placement-test" id="placement-test-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-green-400 text-green-400">
+                    <i className="fas fa-tasks text-xl ml-3"></i>
+                    <span id="placement-test-button-text">ابدأ تحديد المستوى</span>
+                </Link>
                 <Link href="/comic-studio" id="comic-studio-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-amber-400 text-amber-400">
                     <i className="fas fa-paint-brush text-xl ml-3"></i>
                     <span id="comic-studio-button-text">استوديو القصص المصورة</span>

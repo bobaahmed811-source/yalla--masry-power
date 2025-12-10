@@ -427,3 +427,60 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
+
+/* Placement Test Styles */
+.question-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.option-button {
+    display: block;
+    width: 100%;
+    text-align: right;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    background-color: #f9f9f9;
+    transition: all 0.2s;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.option-button:hover {
+    background-color: #eef;
+    border-color: var(--nile-blue);
+}
+
+.option-button.selected {
+    background-color: #e6f0ff;
+    border-color: var(--gold-accent);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.pharaoh-mentor-icon {
+    width: 30px;
+    height: 30px;
+    fill: var(--gold-accent);
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 8px;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: var(--nile-blue);
+    transition: width 0.4s ease-in-out;
+}
