@@ -270,13 +270,56 @@
           "type": "string",
           "description": "Unique identifier for the Instructor entity."
         },
-        "name": {
+        "teacherName": {
           "type": "string",
-          "description": "Name of the instructor."
+          "description": "The name of the teacher."
         },
-        "bio": {
+        "photo": {
           "type": "string",
-          "description": "Biography of the instructor."
+          "format": "uri",
+          "description": "URL to the teacher's profile picture."
+        },
+        "introVideo": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the teacher's introductory video."
+        },
+        "shortBio": {
+          "type": "string",
+          "description": "A short biography of the teacher."
+        },
+        "languages": {
+          "type": "array",
+          "description": "Languages spoken by the teacher.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "specialties": {
+          "type": "array",
+          "description": "The teacher's areas of specialization.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Children",
+              "Women",
+              "Egyptian Dialect",
+              "Conversation"
+            ]
+          }
+        },
+        "availability": {
+          "type": "string",
+          "description": "A text description of the teacher's available days and hours."
+        },
+        "lessonPrice": {
+          "type": "number",
+          "description": "The price for a single lesson."
+        },
+        "bookingLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "An external link for booking (e.g., Gumroad, Calendly)."
         },
         "email": {
           "type": "string",
@@ -293,12 +336,11 @@
         },
         "status": {
           "type": "string",
-          "enum": ["Active", "Inactive"],
+          "enum": [
+            "Active",
+            "Inactive"
+          ],
           "description": "The current status of the instructor."
-        },
-        "pricePerHour": {
-          "type": "number",
-          "description": "The instructor's hourly rate for lessons."
         },
         "averageRating": {
           "type": "number",
@@ -311,8 +353,8 @@
       },
       "required": [
         "id",
-        "name",
-        "bio",
+        "teacherName",
+        "shortBio",
         "email"
       ]
     },
