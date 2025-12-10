@@ -30,7 +30,7 @@ export default function HomePage() {
               setAliasInput(userData.alias);
             } else if (user && !docSnap.exists()) {
               // If no alias and no doc, set initial one in db
-              const initialAlias = "تحتمس القوي";
+              const initialAlias = user.displayName || "تحتمس القوي";
               const initialData = { 
                 alias: initialAlias, 
                 id: user.uid, 
@@ -105,7 +105,7 @@ export default function HomePage() {
                 </p>
             </header>
 
-            <div className="alias-management-card p-4 rounded-lg mb-8 flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4">
+            <div className="alias-management-card p-4 rounded-lg mb-8 flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 md:space-x-reverse">
                 <label htmlFor="alias-input" className="text-lg font-bold text-sand-ochre whitespace-nowrap">اسمك الفرعوني المستعار:</label>
                 <input 
                   type="text" 
