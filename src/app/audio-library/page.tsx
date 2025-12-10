@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -10,7 +11,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Volume2, Handshake, ShoppingBasket, MessagesSquare, ArrowRight, Library, Loader2 } from 'lucide-react';
-import { getSpeechAudio } from './actions';
+import { getSpeechAudio } from '@/app/ai-actions';
 import { useToast } from '@/hooks/use-toast';
 
 // Mock Data for the Audio Library

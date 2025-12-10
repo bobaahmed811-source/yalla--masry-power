@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as THREE from 'three';
 import { ARTIFACT_DATA, type Artifacts } from '@/lib/artifacts';
 import { useToast } from '@/hooks/use-toast';
+import { getSpeechAudio } from '@/app/ai-actions'; // Updated import path
 
 
 export default function MuseumPage() {
@@ -19,6 +20,8 @@ export default function MuseumPage() {
 
     // Use useState for artifact data to make it reactive
     const [artifacts, setArtifacts] = useState<Artifacts>(ARTIFACT_DATA);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+
 
     const state = useRef({
         camera: null as THREE.PerspectiveCamera | null,
@@ -460,11 +463,31 @@ export default function MuseumPage() {
     };
     
     const speakArtifactDescription = async () => {
-        toast({
-            variant: 'destructive',
-            title: '❌ الميزة معطلة',
-            description: 'ميزة تحويل النص إلى كلام معطلة مؤقتاً.',
-        });
+        if (!state.currentArtifactName) return;
+        const artifact = artifacts[state.currentArtifactName];
+        if (!artifact) return;
+
+        setIsSpeaking(true);
+        toast({ title: 'المرشد الصوتي يتحدث...', description: 'جاري توليد الوصف الصوتي للقطعة الأثرية.' });
+        
+        try {
+            const result = await getSpeechAudio(artifact.description);
+            if (result.error || !result.media) {
+                throw new Error(result.error || 'لم يتم إرجاع أي مقطع صوتي.');
+            }
+            const audio = new Audio(result.media);
+            audio.play();
+            audio.onended = () => setIsSpeaking(false);
+            toast({ title: 'تم!', description: `تشغيل وصف: "${artifact.title}"` });
+        } catch (error) {
+            console.error("Error playing audio:", error);
+            toast({
+                variant: 'destructive',
+                title: '❌ خطأ في توليد الصوت',
+                description: (error as Error).message,
+            });
+            setIsSpeaking(false);
+        }
     };
 
     const updateReportContent = useCallback(() => {
@@ -528,8 +551,9 @@ export default function MuseumPage() {
                     <p id="puzzle-text" className="text-sm"></p>
                 </div>
                 <div className="flex flex-col space-y-3 mt-4">
-                    <button id="speak-description" onClick={speakArtifactDescription} className="info-button bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        <i className="fas fa-volume-up ml-2"></i> استمع للوصف (معطل)
+                    <button id="speak-description" onClick={speakArtifactDescription} className="info-button bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed" disabled={isSpeaking}>
+                        {isSpeaking ? <span className="spinner"></span> : <i className="fas fa-volume-up ml-2"></i>}
+                        {isSpeaking ? 'جاري التحدث...' : 'استمع للوصف'}
                     </button>
                     <button id="toggle-puzzle" onClick={handleTogglePuzzle} className="info-button bg-yellow-600 text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors shadow-md">
                         <i className="fas fa-brain ml-2"></i> لغز اليوم

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -20,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { getSpeechAudio } from '../audio-library/actions';
+import { getSpeechAudio } from '../ai-actions';
 
 // Dictionary for all UI texts
 const lang: Record<string, Record<string, string>> = {
