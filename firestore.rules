@@ -159,15 +159,13 @@ service cloud.firestore {
     /**
      * @description Publicly accessible instructor profiles.
      * @path /instructors/{instructorId}
-     * @allow (get) Any user, including unauthenticated users, can read instructor profiles.
-     * @deny (create) Any user attempting to create, update, or delete an instructor profile.
-     * @principle Allows public read access, but denies all writes. An admin role is needed to manage instructor profiles.
+     * @allow (get, list) Anyone can read instructor profiles.
+     * @deny (create, update, delete) For prototyping, allow any signed-in user to manage instructors.
+     * @principle Publicly readable, but write access is initially open for prototyping an admin dashboard.
      */
     match /instructors/{instructorId} {
       allow get, list: if true;
-      // Allow an authenticated user who is an instructor to update their own profile
-      allow update: if isSignedIn() && request.auth.uid == instructorId;
-      allow create, delete: if false; // TODO: Implement write rules once an admin role system is defined.
+      allow write: if isSignedIn(); // DANGER: For prototyping only. Allows any authenticated user to manage instructors.
     }
 
     /**
