@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Gift, PiggyBank, ShoppingCart } from 'lucide-react';
@@ -59,24 +60,16 @@ export default function StorePage() {
       purchaseDate: new Date().toISOString(),
     };
 
-    try {
-      addDocumentNonBlocking(collection(firestore, purchaseCollectionPath), purchaseData);
-      
-      setPaymentMessage({
-        type: 'success',
-        title: '✅ تم تسجيل طلب الشراء بنجاح!',
-        body: `يرجى دفع مبلغ <strong>${price} ج.م</strong> لإكمال العملية. <br/>
-               <strong>خطوات الدفع:</strong> قم بالتحويل البنكي أو تواصل معنا عبر واتساب الآن لتزويدك برابط دفع آمن. <br/>
-               <span class="font-bold text-blue-600">سنرسل لك المنتج (${productName}) فور تأكيد الدفع يدوياً.</span>`,
-      });
-      
-    } catch (error: any) {
-       setPaymentMessage({
-        type: 'error',
-        title: '❌ فشل تسجيل الطلب.',
-        body: `حدث خطأ غير متوقع: ${error.message}`,
-      });
-    }
+    // Use the non-blocking Firestore update
+    addDocumentNonBlocking(collection(firestore, purchaseCollectionPath), purchaseData);
+    
+    setPaymentMessage({
+      type: 'success',
+      title: '✅ تم تسجيل طلب الشراء بنجاح!',
+      body: `يرجى دفع مبلغ <strong>${price} ج.م</strong> لإكمال العملية. <br/>
+             <strong>خطوات الدفع:</strong> قم بالتحويل البنكي أو تواصل معنا عبر واتساب الآن لتزويدك برابط دفع آمن. <br/>
+             <span class="font-bold text-blue-600">سنرسل لك المنتج (${productName}) فور تأكيد الدفع يدوياً.</span>`,
+    });
   };
 
   const redeemWithPoints = (productName: string, pointsCost: number) => {
