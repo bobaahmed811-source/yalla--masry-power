@@ -93,10 +93,10 @@ const AdminDashboardPage = () => {
     const instructorData = { teacherName, email, shortBio, lessonPrice };
     try {
       if (currentInstructor.id) {
-        setDocumentNonBlocking(doc(firestore, 'instructors', currentInstructor.id), instructorData, { merge: true });
+        await setDocumentNonBlocking(doc(firestore, 'instructors', currentInstructor.id), instructorData, { merge: true });
         toast({ title: 'تم التحديث', description: 'تم تحديث بيانات المعلمة بنجاح.' });
       } else {
-        addDocumentNonBlocking(instructorsCollection, instructorData);
+        await addDocumentNonBlocking(instructorsCollection, instructorData);
         toast({ title: 'تمت الإضافة', description: 'تم إضافة معلمة جديدة بنجاح.' });
       }
       setIsInstructorDialogOpen(false);
@@ -127,10 +127,10 @@ const AdminDashboardPage = () => {
       const courseData = { title, description };
       try {
           if (currentCourse.id) {
-              setDocumentNonBlocking(doc(firestore, 'courses', currentCourse.id), courseData, { merge: true });
+              await setDocumentNonBlocking(doc(firestore, 'courses', currentCourse.id), courseData, { merge: true });
               toast({ title: 'تم التحديث', description: 'تم تحديث بيانات الدورة بنجاح.' });
           } else {
-              addDocumentNonBlocking(coursesCollection, courseData);
+              await addDocumentNonBlocking(coursesCollection, courseData);
               toast({ title: 'تمت الإضافة', description: 'تم إضافة دورة جديدة بنجاح.' });
           }
           setIsCourseDialogOpen(false);
@@ -161,13 +161,13 @@ const AdminDashboardPage = () => {
       return;
     }
     setIsLessonSubmitting(true);
-    const lessonData = { title, content, order };
+    const lessonData = { title, content, order, courseId: selectedCourseForLessons?.id };
     try {
       if (currentLesson.id) {
-        setDocumentNonBlocking(doc(lessonsCollection, currentLesson.id), lessonData, { merge: true });
+        await setDocumentNonBlocking(doc(lessonsCollection, currentLesson.id), lessonData, { merge: true });
         toast({ title: 'تم التحديث', description: 'تم تحديث بيانات الدرس بنجاح.' });
       } else {
-        addDocumentNonBlocking(lessonsCollection, lessonData);
+        await addDocumentNonBlocking(lessonsCollection, lessonData);
         toast({ title: 'تمت الإضافة', description: 'تم إضافة درس جديد بنجاح.' });
       }
       setIsLessonDialogOpen(false);

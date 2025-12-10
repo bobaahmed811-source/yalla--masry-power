@@ -58,15 +58,6 @@
         "description": {
           "type": "string",
           "description": "Description of the course content."
-        },
-        "instructorId": {
-          "type": "string",
-          "description": "Reference to Instructor. (Relationship: Instructor 1:N Course)"
-        },
-        "contentUrl": {
-          "type": "string",
-          "description": "URL where the course content is located.",
-          "format": "uri"
         }
       },
       "required": [
@@ -235,32 +226,22 @@
           "type": "string",
           "description": "Reference to Course. (Relationship: Course 1:N Progress)"
         },
-        "lastLessonCompleted": {
-          "type": "string",
-          "description": "Reference to Lesson. (Relationship: Lesson 1:N Progress)"
-        },
-        "quizScores": {
+        "completedLessons": {
           "type": "array",
-          "description": "List of quiz scores",
-          "items": {
-            "type": "number"
-          }
-        },
-        "assignmentCompletion": {
-          "type": "array",
-          "description": "List of assignmentIds that the user has completed",
+          "description": "List of lesson IDs that the user has completed.",
           "items": {
             "type": "string"
           }
+        },
+        "currentLessonId": {
+          "type": "string",
+          "description": "The ID of the next lesson the user should take."
         }
       },
       "required": [
         "id",
         "userId",
-        "courseId",
-        "lastLessonCompleted",
-        "quizScores",
-        "assignmentCompletion"
+        "courseId"
       ]
     },
     "Instructor": {
