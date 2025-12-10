@@ -5,13 +5,14 @@ import Link from 'next/link';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useToast } from '@/hooks/use-toast';
 
 export default function RoyalDashboard() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const [pharaonicAlias, setPharaonicAlias] = useState("تحتمس القوي");
-  const [aliasInput, setAliasInput] = useState("تحتمس القوي");
-  const [isLoadingAlias, setIsLoadingAlias] = useState(true);
+  const [pharaonicAlias, setPharaonicAlias] = useState("زائر فرعوني");
+  const [aliasInput, setAliasInput] = useState("زائر فرعوني");
+  const { toast } = useToast();
 
 
   const userDocRef = useMemoFirebase(() => {
@@ -22,29 +23,31 @@ export default function RoyalDashboard() {
   useEffect(() => {
     async function fetchUserAlias() {
       if (userDocRef) {
-        setIsLoadingAlias(true);
         try {
             const docSnap = await getDoc(userDocRef);
             if (docSnap.exists() && docSnap.data().alias) {
               const userData = docSnap.data();
               setPharaonicAlias(userData.alias);
               setAliasInput(userData.alias);
-            } else if (user) {
-              // If no alias, set initial one in db non-blockingly
-              const initialData = { alias: pharaonicAlias, id: user.uid, email: user.email, name: user.displayName || 'Anonymous' };
+            } else if (user && !docSnap.exists()) {
+              // If no alias and no doc, set initial one in db non-blockingly
+              const initialAlias = "تحتمس القوي";
+              setPharaonicAlias(initialAlias);
+              setAliasInput(initialAlias);
+              const initialData = { alias: initialAlias, id: user.uid, email: user.email, name: user.displayName || 'Anonymous', registrationDate: new Date().toISOString() };
               setDocumentNonBlocking(userDocRef, initialData, { merge: true });
             }
         } catch (error) {
             console.error("Error fetching user alias:", error);
-        } finally {
-            setIsLoadingAlias(false);
         }
       } else {
-        setIsLoadingAlias(false);
+        // Not logged in
+        setPharaonicAlias("زائر فرعوني");
+        setAliasInput("");
       }
     }
     fetchUserAlias();
-  }, [userDocRef, user, pharaonicAlias]);
+  }, [userDocRef, user]);
   
   useEffect(() => {
     let currentLang = 'ar';
@@ -93,6 +96,7 @@ export default function RoyalDashboard() {
     };
   
     function setLanguage(langCode: string) {
+        if(!lang[langCode]) langCode = 'ar'; // Fallback to arabic
         currentLang = langCode;
         const texts = lang[currentLang];
         const isRtl = currentLang === 'ar';
@@ -101,7 +105,6 @@ export default function RoyalDashboard() {
         document.documentElement.lang = currentLang;
     
         const querySelector = (selector: string) => document.querySelector(selector) as HTMLElement;
-        const querySelectorAll = (selector: string) => document.querySelectorAll(selector);
 
         if(querySelector('#main-title')) querySelector('#main-title').textContent = texts.title;
         if(querySelector('#alias-label')) querySelector('#alias-label').textContent = texts.alias_label;
@@ -110,13 +113,16 @@ export default function RoyalDashboard() {
         if(querySelector('#update-alias-button')) querySelector('#update-alias-button').textContent = texts.alias_button;
         if(querySelector('#current-user-rank')) querySelector('#current-user-rank').textContent = pharaonicAlias;
         
+        if(querySelector('#library-button-text')) querySelector('#library-button-text').textContent = texts.library_button;
+        if(querySelector('#review-button-text')) querySelector('#review-button-text').textContent = texts.review_button;
+
+        if(querySelector('#placement-test-button-text')) querySelector('#placement-test-button-text').textContent = texts.placement_test_button;
         if(querySelector('#comic-studio-button-text')) querySelector('#comic-studio-button-text').textContent = texts.comic_studio_button;
         if(querySelector('#museum-button-text')) querySelector('#museum-button-text').textContent = texts.museum_button;
         if(querySelector('#store-button-text')) querySelector('#store-button-text').textContent = texts.store_button;
         if(querySelector('#tutor-button-text')) querySelector('#tutor-button-text').textContent = texts.tutor_button;
         if(querySelector('#word-scramble-button-text')) querySelector('#word-scramble-button-text').textContent = texts.word_scramble_button;
         if(querySelector('#dialogue-challenge-button-text')) querySelector('#dialogue-challenge-button-text').textContent = texts.dialogue_challenge_button;
-        if(querySelector('#placement-test-button-text')) querySelector('#placement-test-button-text').textContent = texts.placement_test_button;
 
         if (user) {
           if (querySelector('#auth-link-text')) querySelector('#auth-link-text').textContent = texts.logout_button;
@@ -150,20 +156,20 @@ export default function RoyalDashboard() {
         langSelect?.removeEventListener('change', handleLangChange);
     };
 
-  }, [pharaonicAlias, user]);
+  }, [pharaonicAlias, user, isUserLoading]);
 
   const updateAliasInFirestore = () => {
     if (!userDocRef) {
-      alert("مستخدم غير معروف، يرجى تسجيل الدخول.");
+      toast({ variant: 'destructive', title: "خطأ", description: "يجب تسجيل الدخول لتحديث الاسم." });
       return;
     }
     const newAlias = aliasInput.trim();
     if (newAlias) {
       setDocumentNonBlocking(userDocRef, { alias: newAlias }, { merge: true });
       setPharaonicAlias(newAlias);
-      alert(`تم تحديث الاسم بنجاح إلى: ${newAlias}`);
+      toast({ title: "تم", description: `تم تحديث الاسم بنجاح إلى: ${newAlias}`});
     } else {
-      alert('الرجاء إدخال اسم فرعوني صحيح.');
+      toast({  variant: 'destructive', title: "خطأ", description: 'الرجاء إدخال اسم فرعوني صحيح.'});
     }
   };
   
@@ -173,8 +179,14 @@ export default function RoyalDashboard() {
             <select id="language-select" className="bg-gold-accent text-dark-granite p-2 rounded-lg font-bold cursor-pointer shadow-lg">
                 <option value="ar">العربية (AR)</option>
                 <option value="en">English (EN)</option>
+                <option value="fr">Français (FR)</option>
+                <option value="es">Español (ES)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="it">Italiano (IT)</option>
+                <option value="nl">Nederlands (NL)</option>
+                <option value="de">Deutsch (DE)</option>
             </select>
-            <Link href={user ? '/login' : '/login'} id="auth-link" className="utility-button px-4 py-2 text-md font-bold rounded-lg flex items-center justify-center">
+            <Link href={user ? '/api/auth/logout' : '/login'} id="auth-link" className="utility-button px-4 py-2 text-md font-bold rounded-lg flex items-center justify-center">
                 <i className={`fas ${user ? 'fa-sign-out-alt' : 'fa-sign-in-alt'} text-lg ml-2`}></i> 
                 <span id="auth-link-text">{user ? 'تسجيل الخروج' : 'تسجيل الدخول'}</span>
             </Link>
@@ -197,22 +209,22 @@ export default function RoyalDashboard() {
                 <input 
                   type="text" 
                   id="alias-input" 
-                  className="w-full md:w-auto flex-grow focus:ring-2 focus:ring-gold-accent focus:outline-none bg-nile-dark border-sand-ochre text-white text-right" 
+                  className="w-full md:w-auto flex-grow focus:ring-2 focus:ring-gold-accent focus:outline-none" 
                   placeholder="اكتب اسمك الفرعوني هنا..." 
                   value={aliasInput}
                   onChange={(e) => setAliasInput(e.target.value)}
-                  disabled={!user || isLoadingAlias}
+                  disabled={!user || isUserLoading}
                 />
                 <button 
                   id="update-alias-button" 
-                  className="cta-button px-6 py-2 rounded-full w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="cta-button px-6 py-2 rounded-full w-full md:w-auto"
                   onClick={updateAliasInFirestore}
-                  disabled={!user || isLoadingAlias}
+                  disabled={!user || isUserLoading}
                 >
                     تحديث الاسم
                 </button>
             </div>
-
+            
              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
                 <Link href="/placement-test" id="placement-test-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-green-400 text-green-400">
                     <i className="fas fa-tasks text-xl ml-3"></i>
@@ -241,6 +253,10 @@ export default function RoyalDashboard() {
                  <Link href="/dialogue-challenge" id="dialogue-challenge-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-purple-400 text-purple-400">
                     <i className="fas fa-comments text-xl ml-3"></i>
                     <span id="dialogue-challenge-button-text">تحدي الحوار</span>
+                </Link>
+                 <Link href="/pronunciation-challenge" id="pronunciation-challenge-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-pink-400 text-pink-400">
+                    <i className="fas fa-bullhorn text-xl ml-3"></i>
+                    <span id="pronunciation-challenge-button-text">تحدي النطق</span>
                 </Link>
             </div>
 
@@ -348,5 +364,3 @@ export default function RoyalDashboard() {
     </div>
   )
 }
-
-    

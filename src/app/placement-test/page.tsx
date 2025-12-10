@@ -38,6 +38,40 @@ const lang: Record<string, any> = {
             f_message: "Exceptional level! You are ready for the most complex challenges and discussions. Your final mastery journey begins now."
         }
     },
+    fr: {
+        title: "Test d'Évaluation de Niveau Royal", mentor: "Écoutez attentivement votre mentor et commencez votre voyage", next_button: "Question Suivante", start_journey: "Commencez votre voyage maintenant", tala7ot: "Veuillez d'abord sélectionner une réponse.",
+        levels: { t: "Disciple du Nil", k: "Scribe du Papyrus", f: "Le Pharaon Puissant" },
+        result: {
+            title_prefix: "Votre Niveau Royal:", t_message: "Excellent niveau de départ! Nous vous enseignerons les bases quotidiennes et vous soutiendrons pour atteindre le niveau 'Scribe du Papyrus' avec confiance.",
+            k_message: "Niveau très fort! Vous avez de bonnes bases, et nous nous concentrerons sur le développement de dialogues complexes et de structures linguistiques avancées.",
+            f_message: "Niveau exceptionnel! Vous êtes prêt pour les défis et discussions les plus complexes. Votre voyage de maîtrise finale commence maintenant."
+        }
+    },
+    es: { 
+        title: "Test de Nivel Real", mentor: "Escuche a su mentor y comience su viaje.", next_button: "Siguiente Pregunta", start_journey: "Comience su viaje ahora.", tala7ot: "Seleccione una respuesta primero.",
+        levels: { t: "Discípulo del Nilo", k: "Escriba del Papiro", f: "El Faraón Poderoso" },
+        result: { title_prefix: "Su Nivel Real:", t_message: "Placeholder for Spanish (ES) result.", k_message: "Placeholder for Spanish (ES) result.", f_message: "Placeholder for Spanish (ES) result." }
+    },
+    zh: { 
+        title: "皇家等级评估测试", mentor: "听从导师，开始旅程。", next_button: "下一题", start_journey: "立即开始您的旅程", tala7ot: "请先选择一个答案。",
+        levels: { t: "尼罗河弟子", k: "纸莎草书记", f: "强大的法老" },
+        result: { title_prefix: "您的皇家等级:", t_message: "Placeholder for Chinese (ZH) result.", k_message: "Placeholder for Chinese (ZH) result.", f_message: "Placeholder for Chinese (ZH) result." }
+    },
+    it: { 
+        title: "Test Reale di Livello", mentor: "Ascolta il tuo mentore e inizia il tuo viaggio.", next_button: "Domanda Successiva", start_journey: "Inizia il tuo viaggio ora", tala7ot: "Si prega di selezionare prima una risposta.",
+        levels: { t: "Discepolo del Nilo", k: "Scriba del Papiro", f: "Il Potente Faraone" },
+        result: { title_prefix: "Il tuo Livello Reale:", t_message: "Placeholder for Italian (IT) result.", k_message: "Placeholder for Italian (IT) result.", f_message: "Placeholder for Italian (IT) result." }
+    },
+    nl: { 
+        title: "Koninklijke Niveautest", mentor: "Luister naar je mentor en begin je reis.", next_button: "Volgende Vraag", start_journey: "Start nu je reis", tala7ot: "Selecteer eerst een antwoord.",
+        levels: { t: "Leerling van de Nijl", k: "Papyrusschrijver", f: "De Machtige Farao" },
+        result: { title_prefix: "Jouw Koninklijke Niveau:", t_message: "Placeholder for Dutch (NL) result.", k_message: "Placeholder for Dutch (NL) result.", f_message: "Placeholder for Dutch (NL) result." }
+    },
+    de: { 
+        title: "Königlicher Level-Test", mentor: "Hören Sie auf Ihren Mentor und beginnen Sie Ihre Reise.", next_button: "Nächste Frage", start_journey: "Starten Sie jetzt Ihre Reise", tala7ot: "Bitte wählen Sie zuerst eine Antwort.",
+        levels: { t: "Schüler des Nils", k: "Papyrus-Schreiber", f: "Der Mächtige Pharao" },
+        result: { title_prefix: "Ihr Königliches Level:", t_message: "Placeholder for German (DE) result.", k_message: "Placeholder for German (DE) result.", f_message: "Placeholder for German (DE) result." }
+    }
 };
 
 const quizData = [
@@ -171,42 +205,45 @@ export default function PlacementTestPage() {
                     </p>
                 </div>
 
-                <div className="progress-bar">
-                    <div id="progress-fill" className="progress-fill" style={{ width: `${showResult ? 100 : progress}%` }}></div>
-                </div>
+                {!showResult && (
+                    <>
+                        <div className="progress-bar">
+                            <div id="progress-fill" className="progress-fill" style={{ width: `${progress}%` }}></div>
+                        </div>
 
-                <div className="question-container">
-                    <h2 className="text-2xl font-bold mb-6 text-dark-granite text-right">
-                        {`(${currentLevel}) - ${currentQuestion.question.ar}`}
-                    </h2>
-                    
-                    <div id="options-container">
-                        {currentQuestion.options.map((option, index) => (
-                            <button
-                                key={index}
-                                className={cn(
-                                    'option-button',
-                                    { 'selected': selectedOption === index }
-                                )}
-                                onClick={() => handleSelectOption(index)}
-                            >
-                                {option.ar}
-                            </button>
-                        ))}
-                    </div>
-                    
-                    <div className="flex justify-end mt-8">
-                        <Button
-                            id="next-question-button"
-                            className="cta-button px-8 py-3 text-lg rounded-full"
-                            onClick={handleNextQuestion}
-                            disabled={selectedOption === null}
-                        >
-                            {texts.next_button}
-                            <i className={`fas ${isRtl ? 'fa-chevron-left mr-2' : 'fa-chevron-right ml-2'}`}></i>
-                        </Button>
-                    </div>
-                </div>
+                        <div className="question-container">
+                            <h2 className="text-2xl font-bold mb-6 text-dark-granite text-right">
+                                {`(${currentLevel}) - ${currentQuestion.question.ar}`}
+                            </h2>
+                            
+                            <div id="options-container">
+                                {currentQuestion.options.map((option, index) => (
+                                    <button
+                                        key={index}
+                                        className={cn(
+                                            'option-button',
+                                            { 'selected': selectedOption === index }
+                                        )}
+                                        onClick={() => handleSelectOption(index)}
+                                    >
+                                        {option.ar}
+                                    </button>
+                                ))}
+                            </div>
+                            
+                            <div className="flex justify-end mt-8">
+                                <Button
+                                    id="next-question-button"
+                                    className="cta-button px-8 py-3 text-lg rounded-full"
+                                    onClick={handleNextQuestion}
+                                >
+                                    {texts.next_button}
+                                    <i className={`fas ${isRtl ? 'fa-chevron-left mr-2' : 'fa-chevron-right ml-2'}`}></i>
+                                </Button>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
 
             {showResult && (
