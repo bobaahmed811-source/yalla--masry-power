@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -17,9 +16,11 @@ import {
   ChevronRight,
   Play,
   ArrowLeft,
+  Loader2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { getSpeechAudio } from '../audio-library/actions';
 
 // Dictionary for all UI texts
 const lang: Record<string, Record<string, string>> = {
@@ -84,6 +85,8 @@ export default function PronunciationChallengePage() {
   const [isRecording, setIsRecording] = useState(false);
   const [userAudioUrl, setUserAudioUrl] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const [isMentorAudioLoading, setIsMentorAudioLoading] = useState(false);
+  const mentorAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const { toast } = useToast();
   const challengePhrase = 'صباح الخير، أنا كويس، متشكر.';
@@ -96,16 +99,31 @@ export default function PronunciationChallengePage() {
       if (userAudioUrl) {
         URL.revokeObjectURL(userAudioUrl);
       }
+      if (mentorAudioRef.current) {
+        mentorAudioRef.current.pause();
+        mentorAudioRef.current = null;
+      }
     };
   }, [userAudioUrl]);
 
-
-  const handlePlayMentorAudio = () => {
-    toast({
-        variant: 'destructive',
-        title: '❌ الميزة معطلة',
-        description: 'ميزة تحويل النص إلى كلام معطلة مؤقتاً بسبب المشاكل التقنية.',
-    });
+  const handlePlayMentorAudio = async () => {
+    setIsMentorAudioLoading(true);
+    toast({ title: texts.loading });
+    try {
+      const result = await getSpeechAudio(challengePhrase);
+      if (result.error || !result.media) {
+        throw new Error(result.error || 'No media returned');
+      }
+      const audio = new Audio(result.media);
+      mentorAudioRef.current = audio;
+      audio.play();
+      toast({ title: texts.playing_audio });
+    } catch (error) {
+      console.error("Error playing mentor audio:", error);
+      toast({ variant: 'destructive', title: texts.audio_error_title, description: (error as Error).message });
+    } finally {
+      setIsMentorAudioLoading(false);
+    }
   };
   
   const startRecording = async () => {
@@ -144,7 +162,6 @@ export default function PronunciationChallengePage() {
     }
   };
 
-
   const handleLanguageChange = (langCode: string) => {
     setCurrentLang(langCode);
     if(document.documentElement) {
@@ -156,7 +173,6 @@ export default function PronunciationChallengePage() {
    useEffect(() => {
     handleLanguageChange(currentLang);
    }, [currentLang]);
-
 
   return (
       <div className="relative flex items-center justify-center min-h-screen bg-nile-dark p-4 overflow-hidden">
@@ -207,10 +223,10 @@ export default function PronunciationChallengePage() {
                 <Button
                     id="play-button"
                     onClick={handlePlayMentorAudio}
-                    disabled={true} // Feature is disabled
+                    disabled={isMentorAudioLoading}
                     className="shadow-lg w-24 h-24 rounded-full bg-gold-accent text-nile-dark text-3xl mx-auto flex items-center justify-center hover:bg-yellow-300 transition-all duration-300 disabled:bg-gray-500 disabled:opacity-50"
                 >
-                    <Play />
+                    {isMentorAudioLoading ? <Loader2 className="animate-spin" /> : <Play />}
                 </Button>
                 <span className="text-sm font-bold text-sand-ochre">{texts.play_audio}</span>
             </div>

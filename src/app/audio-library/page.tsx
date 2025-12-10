@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -10,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Volume2, Handshake, ShoppingBasket, MessagesSquare, ArrowRight, Library } from 'lucide-react';
+import { Volume2, Handshake, ShoppingBasket, MessagesSquare, ArrowRight, Library, Loader2 } from 'lucide-react';
 import { getSpeechAudio } from './actions';
 import { useToast } from '@/hooks/use-toast';
 
@@ -52,13 +51,29 @@ const audioLibraryData = [
 // Phrase Row Component
 const PhraseRow = ({ phrase }: { phrase: { id: string, text: string, translation: string }}) => {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePlayAudio = async () => {
-    toast({
-        variant: 'destructive',
-        title: '❌ الميزة معطلة',
-        description: 'ميزة تحويل النص إلى كلام معطلة مؤقتاً بسبب المشاكل التقنية.',
-    });
+    setIsLoading(true);
+    toast({ title: 'جاري توليد الصوت...', description: 'قد يستغرق هذا بضع ثوانٍ.' });
+    try {
+        const result = await getSpeechAudio(phrase.text);
+        if (result.error || !result.media) {
+            throw new Error(result.error || 'لم يتم إرجاع أي مقطع صوتي.');
+        }
+        const audio = new Audio(result.media);
+        audio.play();
+        toast({ title: 'تم!', description: `تشغيل: "${phrase.text}"` });
+    } catch (error) {
+        console.error("Error playing audio:", error);
+        toast({
+            variant: 'destructive',
+            title: '❌ خطأ في توليد الصوت',
+            description: (error as Error).message,
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -70,11 +85,11 @@ const PhraseRow = ({ phrase }: { phrase: { id: string, text: string, translation
       <Button
         size="icon"
         onClick={handlePlayAudio}
-        disabled={true} // Feature is disabled
+        disabled={isLoading}
         className="cta-button rounded-full w-12 h-12 flex-shrink-0 disabled:bg-gray-500 disabled:opacity-50"
         aria-label={`Listen to "${phrase.text}"`}
       >
-          <Volume2 className="w-6 h-6" />
+          {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Volume2 className="w-6 h-6" />}
       </Button>
     </div>
   );
