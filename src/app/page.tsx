@@ -65,6 +65,7 @@ export default function RoyalDashboard() {
           store_button: "متجر البرديات",
           tutor_button: "المعلم الخصوصي",
           word_scramble_button: "تحدي الكلمات",
+          dialogue_challenge_button: "تحدي الحوار",
           logout_button: "تسجيل الخروج",
           login_button: "تسجيل الدخول"
       },
@@ -83,6 +84,7 @@ export default function RoyalDashboard() {
           store_button: "Papyri Store",
           tutor_button: "AI Tutor",
           word_scramble_button: "Word Scramble",
+          dialogue_challenge_button: "Dialogue Challenge",
           logout_button: "Log Out",
           login_button: "Log In",
       },
@@ -111,6 +113,7 @@ export default function RoyalDashboard() {
         if(querySelector('#store-button-text')) querySelector('#store-button-text').textContent = texts.store_button;
         if(querySelector('#tutor-button-text')) querySelector('#tutor-button-text').textContent = texts.tutor_button;
         if(querySelector('#word-scramble-button-text')) querySelector('#word-scramble-button-text').textContent = texts.word_scramble_button;
+        if(querySelector('#dialogue-challenge-button-text')) querySelector('#dialogue-challenge-button-text').textContent = texts.dialogue_challenge_button;
 
         if (user) {
           if (querySelector('#auth-link-text')) querySelector('#auth-link-text').textContent = texts.logout_button;
@@ -175,7 +178,7 @@ export default function RoyalDashboard() {
         </div>
 
 
-        <div className="max-w-6xl mx-auto w-full">
+        <div className="max-w-7xl mx-auto w-full">
             <header className="text-center mb-6 pb-4 border-b-4 border-gold-accent">
                 <h1 id="main-title" className="text-5xl md:text-6xl royal-title mb-2">لوحة التحكم الملكية</h1>
                 <p id="level-display" className="text-xl text-gray-300 font-bold">
@@ -207,7 +210,7 @@ export default function RoyalDashboard() {
                 </button>
             </div>
 
-             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                 <Link href="/comic-studio" id="comic-studio-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-amber-400 text-amber-400">
                     <i className="fas fa-paint-brush text-xl ml-3"></i>
                     <span id="comic-studio-button-text">استوديو القصص المصورة</span>
@@ -227,6 +230,10 @@ export default function RoyalDashboard() {
                 <Link href="/word-scramble" id="word-scramble-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-indigo-400 text-indigo-400">
                     <i className="fas fa-random text-xl ml-3"></i>
                     <span id="word-scramble-button-text">تحدي الكلمات</span>
+                </Link>
+                 <Link href="/dialogue-challenge" id="dialogue-challenge-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-purple-400 text-purple-400">
+                    <i className="fas fa-comments text-xl ml-3"></i>
+                    <span id="dialogue-challenge-button-text">تحدي الحوار</span>
                 </Link>
             </div>
 
