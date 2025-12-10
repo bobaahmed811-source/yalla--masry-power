@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { ArrowRight, Library, Loader2 } from 'lucide-react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface Book {
   id: string;
@@ -12,22 +13,28 @@ interface Book {
   author: string;
   description: string;
   category: string;
-  cover: string;
+  cover?: string;
 }
 
-const BookCard = ({ book }: { book: Book }) => (
-  <div className="dashboard-card rounded-xl overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-gold-accent flex flex-col">
-    <img src={book.cover || 'https://picsum.photos/seed/default-book/300/400'} alt={`غلاف كتاب ${book.title}`} className="w-full h-56 object-cover" data-ai-hint="book cover" />
-    <div className="p-5 flex flex-col flex-grow">
-      <p className="text-xs text-sand-ochre font-semibold mb-1">{book.category}</p>
-      <h3 className="text-xl font-bold text-white mb-2 truncate royal-title">{book.title}</h3>
-      <p className="text-sm text-gray-400 mb-4 flex-grow">المؤلف: {book.author}</p>
-      <button className="w-full mt-auto cta-button">
-        تصفح الكتاب
-      </button>
-    </div>
-  </div>
-);
+const BookCard = ({ book }: { book: Book }) => {
+    const placeholder = PlaceHolderImages.find(p => p.id === `book-${book.id}`);
+    const imageUrl = book.cover || placeholder?.imageUrl || 'https://picsum.photos/seed/default-book/300/400';
+    const imageHint = placeholder?.imageHint || 'book cover';
+    
+    return (
+      <div className="dashboard-card rounded-xl overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-gold-accent flex flex-col">
+        <img src={imageUrl} alt={`غلاف كتاب ${book.title}`} className="w-full h-56 object-cover" data-ai-hint={imageHint} />
+        <div className="p-5 flex flex-col flex-grow">
+          <p className="text-xs text-sand-ochre font-semibold mb-1">{book.category}</p>
+          <h3 className="text-xl font-bold text-white mb-2 truncate royal-title">{book.title}</h3>
+          <p className="text-sm text-gray-400 mb-4 flex-grow">المؤلف: {book.author}</p>
+          <button className="w-full mt-auto cta-button">
+            تصفح الكتاب
+          </button>
+        </div>
+      </div>
+    );
+}
 
 export default function LibraryPage() {
   const firestore = useFirestore();

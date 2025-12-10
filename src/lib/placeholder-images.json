@@ -7,40 +7,46 @@
       "imageHint": "laptop code"
     },
     {
-      "id": "course-thumb-2",
-      "description": "Thumbnail for Advanced Physics course",
-      "imageUrl": "https://images.unsplash.com/photo-1486825586573-7131f7991bdd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzY2llbmNlJTIwcmVzZWFyY2h8ZW58MHx8fHwxNzY1MjczOTY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "science research"
+      "id": "instructor-1",
+      "description": "Portrait of a friendly female instructor",
+      "imageUrl": "https://images.unsplash.com/photo-1557053910-d9eadeed1c58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NTIzMzE2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
     },
     {
-      "id": "course-thumb-3",
-      "description": "Thumbnail for Digital Art course",
-      "imageUrl": "https://images.unsplash.com/photo-1711580391101-4ff165933d53?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhcnQlMjBkcmF3aW5nfGVufDB8fHx8MTc2NTMxOTIyOXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "art drawing"
+      "id": "instructor-2",
+      "description": "Portrait of another female instructor, smiling",
+      "imageUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NTIzMzE2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "smiling woman"
     },
     {
-      "id": "course-thumb-4",
-      "description": "Thumbnail for World History course",
-      "imageUrl": "https://images.unsplash.com/photo-1472173148041-00294f0814a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxoaXN0b3J5JTIwYm9va3N8ZW58MHx8fHwxNzY1MjQ3MzQ0fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "history books"
+      "id": "instructor-3",
+      "description": "Portrait of a professional female instructor",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NTIzMzE2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "professional woman"
+    },
+    {
+      "id": "book-1",
+      "description": "Cover of an old Islamic book",
+      "imageUrl": "https://images.unsplash.com/photo-1627843519840-a386125e174b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpc2xhbWljJTIwYm9va3xlbnwwfHx8fDE3MjE4MzQ5ODd8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "islamic book"
+    },
+    {
+      "id": "book-2",
+      "description": "Cover of a Tafsir book",
+      "imageUrl": "https://images.unsplash.com/photo-1599249082199-81f5e84a2228?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxxdXJhbiUyMGJvb2t8ZW58MHx8fHwxNzIxODM1MDI0fDA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "quran book"
+    },
+    {
+      "id": "book-3",
+      "description": "Cover of a Hadith collection",
+      "imageUrl": "https://images.unsplash.com/photo-1600170369210-6ea3638787a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxpc2xhbWljJTIwYm9va3xlbnwwfHx8fDE3MjE4MzQ5ODd8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "islamic scripture"
     },
     {
       "id": "user-avatar-1",
       "description": "Avatar for John Doe",
       "imageUrl": "https://images.unsplash.com/photo-1624395213043-fa2e123b2656?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUyODg5NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
-    },
-    {
-      "id": "user-avatar-2",
-      "description": "Avatar for Jane Smith",
-      "imageUrl": "https://images.unsplash.com/photo-1557053910-d9eadeed1c58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NTIzMzE2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
-    },
-    {
-      "id": "user-avatar-3",
-      "description": "Avatar for Alex Ray",
-      "imageUrl": "https://images.unsplash.com/photo-1648218943004-5ec604ef627a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBnbGFzc2VzfGVufDB8fHx8MTc2NTI4NzQ4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person glasses"
     }
   ]
 }

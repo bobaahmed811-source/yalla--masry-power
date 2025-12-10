@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star, ArrowRight, GraduationCap, Loader2 } from 'lucide-react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface Instructor {
   id: string;
@@ -15,52 +16,59 @@ interface Instructor {
   email: string;
   shortBio: string;
   lessonPrice: number;
-  photo?: string; // Optional photo URL
+  photo?: string; // Kept for potential direct URLs
   specialties?: string[];
   averageRating?: number;
   totalReviews?: number;
 }
 
-const InstructorCard = ({ instructor }: { instructor: Instructor }) => (
-  <Card className="dashboard-card text-white overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl flex flex-col">
-    <div className="relative">
-      <Image
-        src={instructor.photo || 'https://picsum.photos/seed/' + instructor.id + '/400/250'}
-        alt={`صورة المعلمة ${instructor.teacherName}`}
-        width={400}
-        height={250}
-        className="w-full h-48 object-cover"
-      />
-      <div className="absolute top-2 left-2 bg-nile-dark/70 text-gold-accent p-2 rounded-lg font-bold">
-        ${instructor.lessonPrice}/ساعة
-      </div>
-    </div>
-    <CardHeader className="text-center">
-      <CardTitle className="royal-title text-2xl">{instructor.teacherName}</CardTitle>
-      {instructor.averageRating && (
-        <div className="flex items-center justify-center text-sand-ochre">
-            {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`w-4 h-4 ${i < instructor.averageRating! ? 'text-gold-accent fill-current' : ''}`} />
-            ))}
-            <span className="mr-2 text-sm">({instructor.totalReviews || 0} مراجعة)</span>
-        </div>
-      )}
-    </CardHeader>
-    <CardContent className="flex-grow flex flex-col">
-      <CardDescription className="text-sand-ochre text-center mb-4 flex-grow">{instructor.shortBio}</CardDescription>
-       {instructor.specialties && instructor.specialties.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-4">
-            {instructor.specialties.map(spec => (
-              <span key={spec} className="bg-sand-ochre/20 text-sand-ochre text-xs font-bold px-2 py-1 rounded-full">{spec}</span>
-            ))}
+const InstructorCard = ({ instructor }: { instructor: Instructor }) => {
+    const placeholder = PlaceHolderImages.find(p => p.id === `instructor-${instructor.id}`);
+    const imageUrl = instructor.photo || placeholder?.imageUrl || 'https://picsum.photos/seed/' + instructor.id + '/400/250';
+    const imageHint = placeholder?.imageHint || 'woman portrait';
+
+  return (
+      <Card className="dashboard-card text-white overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl flex flex-col">
+        <div className="relative">
+          <Image
+            src={imageUrl}
+            alt={`صورة المعلمة ${instructor.teacherName}`}
+            width={400}
+            height={250}
+            className="w-full h-48 object-cover"
+            data-ai-hint={imageHint}
+          />
+          <div className="absolute top-2 left-2 bg-nile-dark/70 text-gold-accent p-2 rounded-lg font-bold">
+            ${instructor.lessonPrice}/ساعة
           </div>
-        )}
-      <Button asChild className="w-full cta-button mt-auto">
-        <Link href={`/booking?instructorId=${instructor.id}`}>احجزي الآن</Link>
-      </Button>
-    </CardContent>
-  </Card>
-);
+        </div>
+        <CardHeader className="text-center">
+          <CardTitle className="royal-title text-2xl">{instructor.teacherName}</CardTitle>
+          {instructor.averageRating && (
+            <div className="flex items-center justify-center text-sand-ochre">
+                {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`w-4 h-4 ${i < instructor.averageRating! ? 'text-gold-accent fill-current' : ''}`} />
+                ))}
+                <span className="mr-2 text-sm">({instructor.totalReviews || 0} مراجعة)</span>
+            </div>
+          )}
+        </CardHeader>
+        <CardContent className="flex-grow flex flex-col">
+          <CardDescription className="text-sand-ochre text-center mb-4 flex-grow">{instructor.shortBio}</CardDescription>
+           {instructor.specialties && instructor.specialties.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                {instructor.specialties.map(spec => (
+                  <span key={spec} className="bg-sand-ochre/20 text-sand-ochre text-xs font-bold px-2 py-1 rounded-full">{spec}</span>
+                ))}
+              </div>
+            )}
+          <Button asChild className="w-full cta-button mt-auto">
+            <Link href={`/booking?instructorId=${instructor.id}`}>احجزي الآن</Link>
+          </Button>
+        </CardContent>
+      </Card>
+  );
+}
 
 
 export default function InstructorsPage() {

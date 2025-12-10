@@ -12,7 +12,8 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useUser, useAuth } from '@/firebase';
+import { useUser, useAuth, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { updateProfileNonBlocking } from '@/firebase/non-blocking-login';
 import {
   ArrowRight,
@@ -42,6 +43,13 @@ import {
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
+
+interface UserProfile {
+    id: string;
+    name: string;
+    email: string;
+    nilePoints?: number;
+}
 
 const StatCard = ({
   icon,
@@ -149,11 +157,18 @@ const AliasManagement = ({ user, toast }: { user: any, toast: any }) => {
 }
 
 export default function HomePage() {
-  const { user, isUserLoading } = useUser();
+  const { user, isUserLoading, firestore } = useUser(true); // Request firestore instance
   const auth = useAuth();
   const { toast } = useToast();
 
-  const nilePoints = 1250; // Mock data
+  const userDocRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const nilePoints = userProfile?.nilePoints ?? 0;
 
   const handleSignOut = () => {
     if (auth) {
@@ -216,12 +231,12 @@ export default function HomePage() {
                   </div>
                   <StatCard
                     icon={<Gem className="h-6 w-6 text-sand-ochre" />}
-                    value={`${nilePoints}`}
+                    value={isProfileLoading ? '...' : `${nilePoints}`}
                     label="نقاط النيل"
                   />
                   <StatCard
                     icon={<BookOpen className="h-6 w-6 text-sand-ochre" />}
-                    value="3 من 20"
+                    value="0 من 0"
                     label="الدروس المكتملة"
                   />
               </div>
@@ -234,7 +249,7 @@ export default function HomePage() {
                     <CardContent>
                         <p className="text-sand-ochre mb-4">أنتِ حالياً في مستوى: <span className="font-bold text-white">تلميذ النيل</span></p>
                         <div className="progress-bar-royal mb-4">
-                           <div className="progress-fill-royal" style={{ width: '15%' }}></div>
+                           <div className="progress-fill-royal" style={{ width: '0%' }}></div>
                         </div>
                         <div className="flex justify-between text-xs text-sand-ochre">
                             <span>المستوى الحالي</span>

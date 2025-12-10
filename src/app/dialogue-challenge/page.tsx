@@ -2,12 +2,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { User, Store, Crown, Medal, Skull, Loader2, Lock, Gem } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getDialogueEvaluation } from './actions';
+import { doc, updateDoc, increment } from 'firebase/firestore';
 
 
 // === Story Data ===
@@ -103,9 +104,10 @@ DialogueBubble.displayName = "DialogueBubble";
 
 export default function DialogueChallengePage() {
   const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
   
-  const [nilePoints, setNilePoints] = useState(1250); // Mock points
+  const [nilePoints, setNilePoints] = useState(0); 
 
   const [dialogue, setDialogue] = useState<any[]>([]);
   const [currentStepId, setCurrentStepId] = useState(1);
@@ -115,6 +117,12 @@ export default function DialogueChallengePage() {
   const dialogueEndRef = useRef<HTMLDivElement>(null);
 
   const alias = user?.displayName || "الزائر الملكي";
+
+  useEffect(() => {
+    if (user && user.nilePoints) {
+      setNilePoints(user.nilePoints);
+    }
+  }, [user]);
 
   const scrollToBottom = () => {
     dialogueEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -133,10 +141,9 @@ export default function DialogueChallengePage() {
   }, []);
 
   const handleUserChoice = useCallback(async (choice: any) => {
-    if (isEvaluating || isChallengeComplete) return;
+    if (isEvaluating || isChallengeComplete || !user || !firestore) return;
   
     const userText = choice.text.substring(choice.text.indexOf(':') + 2);
-    // Find the step in the scenario and dynamically set the speaker to the user's alias
     const userDialogueStepTemplate = storyScenario.find(s => s.id === currentStepId);
     const userDialogueStep = { ...userDialogueStepTemplate, text: userText, speaker: alias };
     setDialogue(prev => [...prev, userDialogueStep]);
@@ -150,15 +157,22 @@ export default function DialogueChallengePage() {
 
     if (result.success) {
       const { score, feedback: feedbackMessage, isPositive } = result.success;
+      
+      // Update points in Firestore
+      const userRef = doc(firestore, 'users', user.uid);
+      await updateDoc(userRef, {
+        nilePoints: increment(score)
+      });
+      // Update local state for immediate feedback
       setNilePoints(prev => prev + score);
+
       setFeedback({ message: feedbackMessage, score, isPositive });
       
       // Proceed after showing feedback
       setTimeout(() => {
         setFeedback(null);
         if (choice.type === 'wrong') {
-            // Stay on the same step for wrong answers
-            setDialogue(prev => prev.slice(0, -1)); // Remove the wrong user choice bubble
+            setDialogue(prev => prev.slice(0, -1));
         } else {
             const nextStep = storyScenario.find(s => s.id === choice.nextId);
             if (nextStep) {
@@ -186,7 +200,7 @@ export default function DialogueChallengePage() {
             }
          }, 1000);
     }
-  }, [alias, currentStepId, isEvaluating, isChallengeComplete, toast]);
+  }, [alias, currentStepId, isEvaluating, isChallengeComplete, toast, user, firestore]);
   
   
   if (isUserLoading) {

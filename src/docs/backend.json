@@ -1,0 +1,923 @@
+
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the EdTech platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the user."
+        },
+        "alias": {
+          "type": "string",
+          "description": "The user's Pharaonic alias."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "Date and time the user registered.",
+          "format": "date-time"
+        },
+        "nilePoints": {
+          "type": "number",
+          "description": "Gamification points earned by the user."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "alias",
+        "name"
+      ]
+    },
+    "Course": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Course",
+      "type": "object",
+      "description": "Represents a course offered on the EdTech platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Course entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the course."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the course content."
+        },
+        "instructorId": {
+          "type": "string",
+          "description": "Reference to Instructor. (Relationship: Instructor 1:N Course)"
+        },
+        "contentUrl": {
+          "type": "string",
+          "description": "URL where the course content is located.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description"
+      ]
+    },
+    "Lesson": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Lesson",
+      "type": "object",
+      "description": "Represents a lesson within a course.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Lesson entity."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Reference to Course. (Relationship: Course 1:N Lesson)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the lesson."
+        },
+        "content": {
+          "type": "string",
+          "description": "Content of the lesson (e.g., text, video URL)."
+        },
+        "order": {
+          "type": "number",
+          "description": "The order of the lesson in the course."
+        }
+      },
+      "required": [
+        "id",
+        "courseId",
+        "title",
+        "content",
+        "order"
+      ]
+    },
+    "Quiz": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Quiz",
+      "type": "object",
+      "description": "Represents a quiz within a course.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Quiz entity."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Reference to Course. (Relationship: Course 1:N Quiz)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the quiz."
+        },
+        "questions": {
+          "type": "array",
+          "description": "List of question ids related to the quiz.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "courseId",
+        "title",
+        "questions"
+      ]
+    },
+    "Question": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Question",
+      "type": "object",
+      "description": "Represents a question within a quiz.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Question entity."
+        },
+        "quizId": {
+          "type": "string",
+          "description": "Reference to Quiz. (Relationship: Quiz 1:N Question)"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text of the question."
+        },
+        "options": {
+          "type": "array",
+          "description": "Available answer options for the question.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "correctAnswer": {
+          "type": "string",
+          "description": "The correct answer to the question."
+        }
+      },
+      "required": [
+        "id",
+        "quizId",
+        "text",
+        "options",
+        "correctAnswer"
+      ]
+    },
+    "Assignment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Assignment",
+      "type": "object",
+      "description": "Represents an assignment within a course.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Assignment entity."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Reference to Course. (Relationship: Course 1:N Assignment)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the assignment."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the assignment."
+        },
+        "dueDate": {
+          "type": "string",
+          "description": "Due date and time for the assignment.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "courseId",
+        "title",
+        "description",
+        "dueDate"
+      ]
+    },
+    "Progress": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Progress",
+      "type": "object",
+      "description": "Represents a students progress in a course.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Progress entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Progress)"
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Reference to Course. (Relationship: Course 1:N Progress)"
+        },
+        "lastLessonCompleted": {
+          "type": "string",
+          "description": "Reference to Lesson. (Relationship: Lesson 1:N Progress)"
+        },
+        "quizScores": {
+          "type": "array",
+          "description": "List of quiz scores",
+          "items": {
+            "type": "number"
+          }
+        },
+        "assignmentCompletion": {
+          "type": "array",
+          "description": "List of assignmentIds that the user has completed",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "courseId",
+        "lastLessonCompleted",
+        "quizScores",
+        "assignmentCompletion"
+      ]
+    },
+    "Instructor": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Instructor",
+      "type": "object",
+      "description": "Represents an instructor who creates and manages courses.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Instructor entity."
+        },
+        "teacherName": {
+          "type": "string",
+          "description": "The name of the teacher."
+        },
+        "photo": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the teacher's profile picture."
+        },
+        "introVideo": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the teacher's introductory video."
+        },
+        "shortBio": {
+          "type": "string",
+          "description": "A short biography of the teacher."
+        },
+        "languages": {
+          "type": "array",
+          "description": "Languages spoken by the teacher.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "specialties": {
+          "type": "array",
+          "description": "The teacher's areas of specialization.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Children",
+              "Women",
+              "Egyptian Dialect",
+              "Conversation",
+              "Quran"
+            ]
+          }
+        },
+        "availability": {
+          "type": "string",
+          "description": "A text description of the teacher's available days and hours."
+        },
+        "lessonPrice": {
+          "type": "number",
+          "description": "The price for a single lesson."
+        },
+        "bookingLink": {
+          "type": "string",
+          "format": "uri",
+          "description": "An external link for booking (e.g., Gumroad, Calendly)."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the instructor.",
+          "format": "email"
+        },
+        "character": {
+          "type": "string",
+          "description": "An emoji or character symbol representing the instructor."
+        },
+        "subject": {
+          "type": "string",
+          "description": "The main subject the instructor teaches."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Active",
+            "Inactive"
+          ],
+          "description": "The current status of the instructor."
+        },
+        "averageRating": {
+          "type": "number",
+          "description": "The instructor's average rating from student reviews."
+        },
+        "totalReviews": {
+          "type": "number",
+          "description": "The total number of reviews the instructor has received."
+        }
+      },
+      "required": [
+        "teacherName",
+        "shortBio",
+        "email",
+        "lessonPrice"
+      ]
+    },
+    "ChatMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatMessage",
+      "type": "object",
+      "description": "Represents a private chat message between two users.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ChatMessage entity."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N ChatMessage (sender))"
+        },
+        "receiverId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N ChatMessage (receiver))"
+        },
+        "message": {
+          "type": "string",
+          "description": "Content of the chat message."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the message was sent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "senderId",
+        "receiverId",
+        "message",
+        "timestamp"
+      ]
+    },
+    "CommunityMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CommunityMessage",
+      "type": "object",
+      "description": "Represents a public message in a community chat room.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the CommunityMessage entity."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "The UID of the user who sent the message."
+        },
+        "senderAlias": {
+          "type": "string",
+          "description": "The alias of the user at the time of sending."
+        },
+        "text": {
+          "type": "string",
+          "description": "Content of the chat message."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Server timestamp of when the message was sent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "senderId",
+        "senderAlias",
+        "text",
+        "timestamp"
+      ]
+    },
+    "AIInteraction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AIInteraction",
+      "type": "object",
+      "description": "Represents an interaction with the AI tutoring assistant.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AIInteraction entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N AIInteraction)"
+        },
+        "question": {
+          "type": "string",
+          "description": "The question asked to the AI assistant."
+        },
+        "answer": {
+          "type": "string",
+          "description": "The AI assistant's response."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of the interaction.",
+          "format": "date-time"
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Reference to the Course. (Relationship: Course 1:N AIInteraction). Optional as could be a general question."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "question",
+        "answer",
+        "timestamp"
+      ]
+    },
+    "Purchase": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Purchase",
+      "type": "object",
+      "description": "Represents a purchase of a product within the EdTech platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Purchase entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Purchase)"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Identifier for the product purchased. This could reference a Course or other digital asset."
+        },
+        "purchaseDate": {
+          "type": "string",
+          "description": "Date and time of the purchase.",
+          "format": "date-time"
+        },
+        "price": {
+          "type": "number",
+          "description": "Price of the product at the time of purchase."
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the purchase (e.g., 'Awaiting Payment', 'Completed', 'Refunded')."
+        },
+        "isGift": {
+          "type": "boolean",
+          "description": "Indicates if the purchase is a gift for another user."
+        },
+        "recipientEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "The email address of the gift recipient."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "productId",
+        "purchaseDate",
+        "price",
+        "status"
+      ]
+    },
+    "Review": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Review",
+      "type": "object",
+      "description": "Represents a student's review of an instructor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Review."
+        },
+        "instructorId": {
+          "type": "string",
+          "description": "The ID of the instructor being reviewed."
+        },
+        "studentId": {
+          "type": "string",
+          "description": "The ID of the student who wrote the review."
+        },
+        "rating": {
+          "type": "number",
+          "description": "The rating given by the student, typically from 1 to 5."
+        },
+        "comment": {
+          "type": "string",
+          "description": "The text content of the review."
+        },
+        "date": {
+          "type": "string",
+          "description": "The date the review was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "instructorId",
+        "studentId",
+        "rating",
+        "comment",
+        "date"
+      ]
+    },
+    "ComicPerformance": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ComicPerformance",
+      "type": "object",
+      "description": "Represents a student's voice-over performance for a generated comic dialogue.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the performance record."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user who performed the dialogue."
+        },
+        "scene": {
+          "type": "string",
+          "description": "The scene key (e.g., 'market', 'school') for which the dialogue was generated."
+        },
+        "generatedDialog": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The 3-line dialogue generated by the AI."
+        },
+        "recordingDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the audio was recorded."
+        },
+        "audioMimeType": {
+          "type": "string",
+          "description": "The MIME type of the recorded audio (e.g., 'audio/webm')."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Pending Review", "Reviewed", "Needs Improvement"],
+          "description": "The review status of the performance."
+        }
+      },
+      "required": ["id", "userId", "scene", "generatedDialog", "recordingDate", "audioMimeType", "status"]
+    },
+    "Book": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Book",
+        "type": "object",
+        "description": "Represents a book in the Islamic digital library.",
+        "properties": {
+            "id": { "type": "string", "description": "Unique identifier for the Book." },
+            "title": { "type": "string", "description": "Title of the book." },
+            "author": { "type": "string", "description": "Author of the book." },
+            "description": { "type": "string", "description": "A short description of the book." },
+            "category": { "type": "string", "description": "Category of the book (e.g., 'Tafsir', 'Hadith')." },
+            "cover": { "type": "string", "format": "uri", "description": "URL to the book cover image." }
+        },
+        "required": ["id", "title", "author", "description", "category", "cover"]
+    },
+    "Hadith": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Hadith",
+        "type": "object",
+        "description": "Represents a single Hadith in the Sunnah section.",
+        "properties": {
+            "id": { "type": "string", "description": "Unique identifier for the Hadith." },
+            "text": { "type": "string", "description": "The text of the Hadith." },
+            "source": { "type": "string", "description": "The source of the Hadith (e.g., 'Sahih Bukhari')." },
+            "topic": { "type": "string", "description": "The main topic or chapter of the Hadith." }
+        },
+        "required": ["id", "text", "source", "topic"]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Path-based ownership ensures only the user can access their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/courses/{courseId}",
+        "definition": {
+          "entityName": "Course",
+          "schema": {
+            "$ref": "#/backend/entities/Course"
+          },
+          "description": "Stores course information. Publicly accessible, but creation/modification is restricted to instructors (handled via security rules).",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "The unique identifier of the course."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/courses/{courseId}/lessons/{lessonId}",
+        "definition": {
+          "entityName": "Lesson",
+          "schema": {
+            "$ref": "#/backend/entities/Lesson"
+          },
+          "description": "Stores lessons within a course. Accessible to users enrolled in the course (authorization to be determined through a separate enrollment/membership mechanism).",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "The unique identifier of the course."
+            },
+            {
+              "name": "lessonId",
+              "description": "The unique identifier of the lesson."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/courses/{courseId}/quizzes/{quizId}",
+        "definition": {
+          "entityName": "Quiz",
+          "schema": {
+            "$ref": "#/backend/entities/Quiz"
+          },
+          "description": "Stores quizzes within a course. Accessible to users enrolled in the course.",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "The unique identifier of the course."
+            },
+            {
+              "name": "quizId",
+              "description": "The unique identifier of the quiz."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/quizzes/{quizId}/questions/{questionId}",
+        "definition": {
+          "entityName": "Question",
+          "schema": {
+            "$ref": "#/backend/entities/Question"
+          },
+          "description": "Stores questions within a quiz.  Accessible to users enrolled in the course.",
+          "params": [
+            {
+              "name": "quizId",
+              "description": "The unique identifier of the quiz."
+            },
+            {
+              "name": "questionId",
+              "description": "The unique identifier of the question."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/courses/{courseId}/assignments/{assignmentId}",
+        "definition": {
+          "entityName": "Assignment",
+          "schema": {
+            "$ref": "#/backend/entities/Assignment"
+          },
+          "description": "Stores assignments within a course. Accessible to users enrolled in the course.",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "The unique identifier of the course."
+            },
+            {
+              "name": "assignmentId",
+              "description": "The unique identifier of the assignment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/progress/{progressId}",
+        "definition": {
+          "entityName": "Progress",
+          "schema": {
+            "$ref": "#/backend/entities/Progress"
+          },
+          "description": "Stores user progress for a course. Path-based ownership ensures only the user can access their own progress data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "progressId",
+              "description": "The unique identifier of the progress entity."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/instructors/{instructorId}",
+        "definition": {
+          "entityName": "Instructor",
+          "schema": {
+            "$ref": "#/backend/entities/Instructor"
+          },
+          "description": "Stores instructor profiles. Publicly accessible, but creation/modification is restricted to admins.",
+          "params": [
+            {
+              "name": "instructorId",
+              "description": "The unique identifier of the instructor."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/instructors/{instructorId}/reviews/{reviewId}",
+        "definition": {
+          "entityName": "Review",
+          "schema": {
+            "$ref": "#/backend/entities/Review"
+          },
+          "description": "Stores student reviews for a specific instructor. Publicly readable.",
+          "params": [
+            {
+              "name": "instructorId",
+              "description": "The ID of the instructor being reviewed."
+            },
+            {
+              "name": "reviewId",
+              "description": "The unique identifier of the review."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/messages/{messageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ChatMessage"
+          },
+          "description": "Stores private chat messages between users. Security rules should ensure only the sender and receiver can access the message.",
+          "params": [
+            {
+              "name": "messageId",
+              "description": "The unique identifier of the chat message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/community_messages/{messageId}",
+        "definition": {
+          "entityName": "CommunityMessage",
+          "schema": {
+            "$ref": "#/backend/entities/CommunityMessage"
+          },
+          "description": "Stores public messages in a community chat room. Readable and writable by any authenticated user.",
+          "params": [
+            {
+              "name": "messageId",
+              "description": "The unique identifier of the community message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/ai_interactions/{interactionId}",
+        "definition": {
+          "entityName": "AIInteraction",
+          "schema": {
+            "$ref": "#/backend/entities/AIInteraction"
+          },
+          "description": "Stores AI interaction logs for a user. Path-based ownership ensures only the user can access their own interaction logs.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "interactionId",
+              "description": "The unique identifier of the AI interaction."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/artifacts/{appId}/public/data/digital_purchases/{purchaseId}",
+        "definition": {
+          "entityName": "Purchase",
+          "schema": {
+            "$ref": "#/backend/entities/Purchase"
+          },
+          "description": "Stores data regarding digital purchases. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "appId",
+              "description": "The unique identifier of the application (e.g., to distinguish environments or versions)."
+            },
+            {
+              "name": "purchaseId",
+              "description": "The unique identifier of the purchase."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/artifacts/{appId}/users/{userId}/comic_performances/{performanceId}",
+        "definition": {
+          "entityName": "ComicPerformance",
+          "schema": { "$ref": "#/backend/entities/ComicPerformance" },
+          "description": "Stores a student's recorded voice-over for a comic dialogue. Path-based ownership ensures only the user can create and manage their own performances.",
+          "params": [
+            { "name": "appId", "description": "The application identifier." },
+            { "name": "userId", "description": "The user's unique identifier." },
+            { "name": "performanceId", "description": "The unique identifier for the performance record." }
+          ]
+        }
+      },
+      {
+        "path": "/books/{bookId}",
+        "definition": {
+          "entityName": "Book",
+          "schema": { "$ref": "#/backend/entities/Book" },
+          "description": "Stores books for the digital library. Publicly readable.",
+          "params": [
+            { "name": "bookId", "description": "The unique identifier for the book." }
+          ]
+        }
+      },
+      {
+        "path": "/hadiths/{hadithId}",
+        "definition": {
+          "entityName": "Hadith",
+          "schema": { "$ref": "#/backend/entities/Hadith" },
+          "description": "Stores Hadiths for the Sunnah section. Publicly readable.",
+          "params": [
+            { "name": "hadithId", "description": "The unique identifier for the Hadith." }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure prioritizes security and scalability for the EdTech platform, focusing on authorization independence and clear access patterns. It leverages path-based ownership for user-specific data and membership maps for collaborative data access, eliminating the need for `get()` calls in security rules and ensuring atomic operations.\n\nThe core principle is **Authorization Independence**. For the `/artifacts/{appId}/public/data/digital_purchases` collection, even though the data is 'public', security is maintained because each document contains the `userId`. Rules are structured to ensure only the authenticated user can create a purchase request for themselves. The `appId` parameter in the path allows for segregation and management of data within specific application contexts, which is useful for multi-tenant environments or different versions of the EdTech platform.\n\n**QAPs (Rules are not Filters):**\n*   The structure supports secure `list` operations by segregating data into collections with homogeneous security postures. For example, purchase requests are stored in a dedicated collection `/artifacts/{appId}/public/data/digital_purchases`, where access is controlled based on the `userId` within each document, allowing for listing purchases securely.\n\n**Denormalization**: The `userId` is denormalized into the `/artifacts/{appId}/public/data/digital_purchases` collection, where access control can depend directly on the attributes stored in the document. A new `/instructors/{instructorId}/reviews/{reviewId}` path is added for storing student reviews. This is publicly readable but writing is restricted to authenticated users to prevent spam. A new collection for `instructors` has been added to support the admin dashboard functionality, with rules initially allowing any signed-in user to manage them for ease of prototyping.\n\nA new `community_messages` collection is added for the public chat feature. Security rules are configured to allow any authenticated user to read from and write to this collection, fostering an open communication environment for students. Updates and deletes are disallowed to maintain the integrity of the chat history. A new path for `comic_performances` is added under `/artifacts/{appId}/users/{userId}` to store user-generated content securely with path-based ownership. New publicly readable collections for `books` and `hadiths` have been added to support the Quran Oasis section."
+  }
+}
