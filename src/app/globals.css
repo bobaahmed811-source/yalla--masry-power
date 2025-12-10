@@ -366,37 +366,3 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-/* Goal Page Styles */
-.goal-card {
-    background-color: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    transition: transform 0.3s, border-color 0.3s;
-    border-width: 2px;
-    border-color: transparent;
-    cursor: pointer;
-    height: 100%;
-}
-
-.goal-card.selected-card {
-    border-color: var(--nile-blue);
-    background-color: #e6f0ff;
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-}
-
-.pharaoh-mentor-icon {
-    width: 40px;
-    height: 40px;
-    fill: var(--gold-accent);
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 10px;
-    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.5));
-}
-
-.booking-card {
-    direction: rtl;
-    font-family: 'Cairo', sans-serif;
-}
