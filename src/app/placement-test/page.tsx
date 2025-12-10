@@ -41,8 +41,7 @@ const lang: Record<string, any> = {
     fr: {
         title: "Test d'Évaluation de Niveau Royal", mentor: "Écoutez attentivement votre mentor et commencez votre voyage", next_button: "Question Suivante", start_journey: "Commencez votre voyage maintenant", tala7ot: "Veuillez d'abord sélectionner une réponse.",
         levels: { t: "Disciple du Nil", k: "Scribe du Papyrus", f: "Le Pharaon Puissant" },
-        result: {
-            title_prefix: "Votre Niveau Royal:", t_message: "Excellent niveau de départ! Nous vous enseignerons les bases quotidiennes et vous soutiendrons pour atteindre le niveau 'Scribe du Papyrus' avec confiance.",
+        result: { title_prefix: "Votre Niveau Royal:", t_message: "Excellent niveau de départ! Nous vous enseignerons les bases quotidiennes et vous soutiendrons pour atteindre le niveau 'Scribe du Papyrus' avec confiance.",
             k_message: "Niveau très fort! Vous avez de bonnes bases, et nous nous concentrerons sur le développement de dialogues complexes et de structures linguistiques avancées.",
             f_message: "Niveau exceptionnel! Vous êtes prêt pour les défis et discussions les plus complexes. Votre voyage de maîtrise finale commence maintenant."
         }
@@ -205,10 +204,10 @@ export default function PlacementTestPage() {
                     </p>
                 </div>
 
-                {!showResult && (
+                {!showResult ? (
                     <>
-                        <div className="progress-bar">
-                            <div id="progress-fill" className="progress-fill" style={{ width: `${progress}%` }}></div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
+                            <div className="bg-nile h-2.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
                         </div>
 
                         <div className="question-container">
@@ -216,13 +215,15 @@ export default function PlacementTestPage() {
                                 {`(${currentLevel}) - ${currentQuestion.question.ar}`}
                             </h2>
                             
-                            <div id="options-container">
+                            <div className="space-y-4">
                                 {currentQuestion.options.map((option, index) => (
                                     <button
                                         key={index}
                                         className={cn(
-                                            'option-button',
-                                            { 'selected': selectedOption === index }
+                                            'w-full text-right p-4 rounded-lg border-2 transition-all duration-200 text-lg',
+                                            selectedOption === index 
+                                                ? 'bg-nile text-white border-gold-accent shadow-lg' 
+                                                : 'bg-white text-dark-granite border-gray-300 hover:bg-gray-100 hover:border-nile'
                                         )}
                                         onClick={() => handleSelectOption(index)}
                                     >
@@ -243,12 +244,8 @@ export default function PlacementTestPage() {
                             </div>
                         </div>
                     </>
-                )}
-            </div>
-
-            {showResult && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white p-8 rounded-xl text-center max-w-sm w-full border-t-8 border-nile">
+                ) : (
+                    <div className="text-center p-4">
                         <i className={`fas ${iconClass} text-6xl mb-4 text-gold-accent`}></i>
                         <h3 className="text-3xl font-bold mb-4 text-dark-granite royal-title">{resultTitle}</h3>
                         <p className="text-lg mb-6 text-gray-700">{resultMessage}</p>
@@ -258,8 +255,10 @@ export default function PlacementTestPage() {
                             </Button>
                         </Link>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 }
+
+    
