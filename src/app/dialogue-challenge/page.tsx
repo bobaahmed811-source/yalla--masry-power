@@ -6,6 +6,7 @@ import { getDialogueEvaluation } from './actions';
 import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { User, Store, Crown, Medal, Skull, Loader2 } from 'lucide-react';
 
 // === Story Data ===
 const storyScenario = [
@@ -72,24 +73,24 @@ const DialogueBubble = React.forwardRef<HTMLDivElement, { speaker: string; text:
   ({ speaker, text, isUser, isEvaluating }, ref) => {
     const baseClasses = "max-w-[80%] p-3 rounded-xl shadow-lg mb-4 transition-all duration-300";
     const bubbleClasses = isUser
-      ? "bg-green-600 text-white ml-auto rounded-br-none"
-      : "bg-[#0b4e8d] text-gray-100 mr-auto rounded-tl-none";
-    const icon = isUser ? "fas fa-user-circle" : "fas fa-store";
-    const iconColor = isUser ? "text-green-300" : "text-[#d6b876]";
+      ? "bg-gold-accent/20 text-white ml-auto rounded-br-none border border-gold-accent"
+      : "bg-nile text-gray-100 mr-auto rounded-tl-none border border-sand-ochre/50";
+    const Icon = isUser ? User : Store;
+    const iconColor = isUser ? "text-gold-accent" : "text-sand-ochre";
 
     return (
-      <div ref={ref} className={`flex items-start ${isUser ? 'justify-end' : 'justify-start'}`}>
-        {!isUser && <i className={`${icon} text-2xl ${iconColor} mt-2 ml-2 flex-shrink-0`}></i>}
+      <div ref={ref} className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+        {!isUser && <div className={`p-2 bg-nile-dark rounded-full mt-1 ${iconColor}`}><Icon className="w-6 h-6"/></div>}
         <div className={`${baseClasses} ${bubbleClasses} ${isEvaluating ? 'opacity-70' : ''}`}>
           <p className="font-bold text-xs opacity-80 mb-1">{speaker}</p>
           <p className="text-base whitespace-pre-wrap">{text}</p>
           {isEvaluating && (
             <div className="text-xs text-center mt-2 text-white opacity-90 flex justify-center items-center">
-              <i className="fas fa-spinner fa-spin mr-2"></i> يتم تقييم ردك...
+              <Loader2 className="mr-2 h-4 w-4 animate-spin"/> يتم تقييم ردك...
             </div>
           )}
         </div>
-        {isUser && <i className={`${icon} text-2xl ${iconColor} mt-2 mr-2 flex-shrink-0`}></i>}
+        {isUser && <div className={`p-2 bg-nile-dark rounded-full mt-1 ${iconColor}`}><Icon className="w-6 h-6" /></div>}
       </div>
     );
   }
@@ -207,7 +208,7 @@ export default function DialogueChallengePage() {
   if (isUserLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#0d284e]">
-        <p className="text-white text-xl">جاري التحقق من هوية الفرعون...</p>
+        <p className="text-white text-xl flex items-center gap-2"><Loader2 className="animate-spin"/> جاري التحقق من هوية الفرعون...</p>
       </div>
     );
   }
@@ -248,44 +249,44 @@ export default function DialogueChallengePage() {
                 />
             ))}
             {feedback && (
-              <div ref={dialogueEndRef} className={`p-3 rounded-lg text-center shadow-inner mt-4 ${feedback.isPositive ? 'bg-green-800 text-green-100' : 'bg-red-800 text-red-100'}`}>
-                <p className="font-bold text-lg mb-1">
-                  <i className={`ml-2 fas ${feedback.isPositive ? 'fa-medal' : 'fa-skull-crossbones'}`}></i>
+              <div ref={dialogueEndRef} className={`p-3 rounded-lg text-center shadow-inner mt-4 ${feedback.isPositive ? 'bg-green-800/50 text-green-200 border-green-600' : 'bg-red-800/50 text-red-200 border-red-600'} border`}>
+                <p className="font-bold text-lg mb-1 flex items-center justify-center gap-2">
+                  {feedback.isPositive ? <Medal /> : <Skull />}
                   {feedback.isPositive ? `تقييم فرعوني: (+${feedback.score} نقطة)` : `تنبيه: (${feedback.score} نقطة)`}
                 </p>
                 <p className="text-sm">{feedback.message}</p>
               </div>
             )}
             {isChallengeComplete && !isEvaluating && (
-              <div ref={dialogueEndRef} className="p-4 bg-[#FFD700] text-[#0d284e] font-bold text-center rounded-lg mt-6 shadow-2xl border-2 border-[#0d284e]">
-                <i className="fas fa-crown text-3xl mb-2"></i>
+              <div ref={dialogueEndRef} className="p-4 bg-gold-accent text-nile-dark font-bold text-center rounded-lg mt-6 shadow-2xl border-2 border-nile-dark">
+                <Crown className="w-12 h-12 mx-auto mb-2"/>
                 <p className="text-xl">تهانينا يا {alias}، لقد أتقنت حوار السوق!</p>
                 <p className="text-sm mt-1">يمكنك الآن العودة إلى لوحة التحكم الملكية.</p>
               </div>
             )}
           </div>
 
-          <div className="mt-4 pt-4 border-t-2 border-gray-600">
+          <div className="mt-4 pt-4 border-t-2 border-sand-ochre/30">
             {currentOptions && !isEvaluating && !isChallengeComplete && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {currentOptions.map((choice:any, index:number) => (
-                  <button key={index} onClick={() => handleUserChoice(choice)} className="w-full px-4 py-3 bg-[#d6b876] text-[#0d284e] font-bold rounded-lg shadow-md hover:bg-[#FFD700] transition-colors disabled:opacity-50" disabled={isEvaluating}>
+                  <Button key={index} onClick={() => handleUserChoice(choice)} className="w-full text-right justify-start px-4 py-6 text-base bg-nile text-sand-ochre font-bold rounded-lg shadow-md hover:bg-sand-ochre/20 hover:text-white transition-colors disabled:opacity-50 border border-sand-ochre/50" disabled={isEvaluating}>
                     {choice.text}
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
             {isEvaluating && (
-              <div className="text-center py-4 text-[#d6b876]">
-                <i className="fas fa-spinner fa-spin text-3xl"></i>
+              <div className="text-center py-4 text-sand-ochre">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto"/>
                 <p className="mt-2 text-lg">الذكاء الاصطناعي يقوم بتقييم طلاقتك...</p>
               </div>
             )}
             {isChallengeComplete && !isEvaluating && (
                 <Link href="/" className="w-full block text-center mt-3">
-                  <button className="px-8 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition-colors">
+                  <Button className="cta-button px-8 py-3 text-lg">
                     العودة إلى لوحة التحكم الملكية
-                  </button>
+                  </Button>
                 </Link>
             )}
           </div>
