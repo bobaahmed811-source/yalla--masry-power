@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -24,23 +25,23 @@ export default function GoalsPage() {
   };
 
   return (
-    <div className="antialiased flex items-center justify-center min-h-screen bg-[#f0f4f8]">
-      <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-2xl border-t-8 border-nile-blue">
+    <div className="antialiased flex items-center justify-center min-h-screen bg-nile-dark p-4">
+      <div className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-2xl dashboard-card text-white">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-extrabold text-dark-granite mb-2">
-            مرحباً بك في <span className="royal-title text-nile-blue">Yalla Masry</span>!
+          <h1 className="text-4xl font-extrabold text-dark-granite mb-2 royal-title text-gold-accent">
+            مرحباً بك في قاعة تحديد المصير
           </h1>
-          <p className="text-xl text-nile-blue font-semibold mb-6 flex items-center justify-center">
+          <p className="text-xl text-sand-ochre font-semibold mb-6 flex items-center justify-center">
             <span className="ml-2">رسالة من مرشدك</span>
             <svg
-              className="pharaoh-mentor-icon"
+              className="pharaoh-mentor-icon w-12 h-12 inline-block mx-2"
               viewBox="0 0 100 100"
               xmlns="http://www.w3.org/2000/svg"
             >
               <circle cx="50" cy="40" r="30" fill="#fadc99" />
               <path
                 d="M 20 25 Q 50 10 80 25 L 80 40 Q 50 60 20 40 Z"
-                fill="#316889"
+                fill="#0b4e8d"
               />
               <path
                 d="M 20 25 Q 50 10 80 25 L 80 40 Q 50 60 20 40 Z"
@@ -66,20 +67,20 @@ export default function GoalsPage() {
               />
               <path
                 d="M 40 70 C 40 85, 60 85, 60 70 L 55 60 L 45 60 Z"
-                fill="#316889"
+                fill="#0b4e8d"
                 stroke="#FFD700"
                 strokeWidth="2"
               />
-              <circle cx="40" cy="40" r="4" fill="#316889" />
-              <circle cx="60" cy="40" r="4" fill="#316889" />
+              <circle cx="40" cy="40" r="4" fill="#0b4e8d" />
+              <circle cx="60" cy="40" r="4" fill="#0b4e8d" />
               <path
                 d="M 45 55 Q 50 58 55 55"
-                stroke="#316889"
+                stroke="#0b4e8d"
                 strokeWidth="2"
                 fill="none"
               />
             </svg>
-            <span className="mr-2">:</span>
+            <span className="mr-2">: "اختر هدفك بحكمة، فهو ما سيحدد مسار رحلتك في المملكة."</span>
           </p>
           <div className="w-20 h-1 bg-gold-accent mx-auto"></div>
         </div>
@@ -88,7 +89,6 @@ export default function GoalsPage() {
           <GoalCard
             goal="social"
             icon="fas fa-users"
-            iconColor="#4CAF50"
             title="نقرة الحياة (التواصل الاجتماعي)"
             description="إتقان اللهجة للحديث اليومي، فهم الأفلام، والاندماج مع الأصدقاء."
             selectedGoal={selectedGoal}
@@ -97,7 +97,6 @@ export default function GoalsPage() {
           <GoalCard
             goal="business"
             icon="fas fa-chart-line"
-            iconColor="#FF9800"
             title="نقرة التجارة (الأعمال)"
             description="القدرة على التفاوض وإدارة الاجتماعات والعمل في بيئات احترافية مصرية."
             selectedGoal={selectedGoal}
@@ -106,7 +105,6 @@ export default function GoalsPage() {
           <GoalCard
             goal="travel"
             icon="fas fa-map-marked-alt"
-            iconColor="#03A9F4"
             title="نقرة الاكتشاف (السفر والسياحة)"
             description="التحدث بثقة في الشوارع، الأسواق، والمطاعم أثناء زيارة مصر."
             selectedGoal={selectedGoal}
@@ -115,7 +113,6 @@ export default function GoalsPage() {
           <GoalCard
             goal="academic"
             icon="ankh"
-            iconColor="#9C27B0"
             title="نقرة البردية (الدراسات المتقدمة)"
             description="إتقان النحو والصرف والمفردات التاريخية للبحث الأكاديمي."
             selectedGoal={selectedGoal}
@@ -142,7 +139,6 @@ export default function GoalsPage() {
 const GoalCard = ({
   goal,
   icon,
-  iconColor,
   title,
   description,
   selectedGoal,
@@ -150,7 +146,6 @@ const GoalCard = ({
 }: {
   goal: string;
   icon: string;
-  iconColor: string;
   title: string;
   description: string;
   selectedGoal: string | null;
@@ -161,10 +156,10 @@ const GoalCard = ({
   return (
     <div
       className={cn(
-        'goal-card bg-white rounded-2xl p-6 shadow-lg transition-all duration-300 border-2 border-transparent cursor-pointer h-full',
+        'goal-card bg-nile rounded-2xl p-6 shadow-lg transition-all duration-300 border-2 border-transparent cursor-pointer h-full',
         {
-          'selected-card border-nile-blue bg-[#e6f0ff] shadow-xl': isSelected,
-          'hover:transform hover:-translate-y-1 hover:border-gold-accent':
+          'selected-card border-gold-accent bg-sand-ochre/20 shadow-2xl transform scale-105': isSelected,
+          'hover:transform hover:-translate-y-1 hover:border-sand-ochre':
             !isSelected,
         }
       )}
@@ -173,11 +168,8 @@ const GoalCard = ({
       <div className="text-center">
         {icon === 'ankh' ? (
           <svg
-            className="pharaonic-icon-ankh icon-royal mx-auto mb-3"
-            style={{ color: iconColor }}
+            className="pharaonic-icon-ankh icon-royal mx-auto mb-3 w-12 h-12 text-gold-accent"
             viewBox="0 0 24 24"
-            width="48"
-            height="48"
             stroke="currentColor"
             strokeWidth="2"
             fill="none"
@@ -188,10 +180,10 @@ const GoalCard = ({
             <circle cx="12" cy="8" r="4" />
           </svg>
         ) : (
-          <i className={cn(icon, 'icon-royal text-5xl mb-3')} style={{ color: iconColor }}></i>
+          <i className={cn(icon, 'icon-royal text-5xl mb-3 text-gold-accent')}></i>
         )}
-        <h3 className="text-xl font-bold mb-2 text-dark-granite">{title}</h3>
-        <p className="text-gray-600">{description}</p>
+        <h3 className="text-xl font-bold mb-2 text-white">{title}</h3>
+        <p className="text-sand-ochre">{description}</p>
       </div>
     </div>
   );
