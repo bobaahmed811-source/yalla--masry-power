@@ -73,7 +73,7 @@ export const ARTIFACT_DATA: Artifacts = {
     'tut_dagger': {
         title: 'خنجر توت النيزكي',
         description: 'خنجر استثنائي مصنوع بالكامل من حديد نيزكي (جاء من الفضاء).',
-        puzzle: 'لغ-ز: ما هي الميزة غير العادية التي جعلت هذا الخنجر فريداً؟',
+        puzzle: 'لغز: ما هي الميزة غير العادية التي جعلت هذا الخنجر فريداً؟',
         position: new THREE.Vector3(-50, 0, -50),
         icon: 'fas fa-meteor',
         goal: false,
@@ -85,6 +85,42 @@ export const ARTIFACT_DATA: Artifacts = {
         puzzle: 'لغز: ما هو رمز الحماية الشائع الذي يظهر في الكثير من الحلي المصرية القديمة؟',
         position: new THREE.Vector3(50, 0, -50),
         icon: 'fas fa-gem',
+        goal: false,
+        isExplored: false
+    },
+    'nefertiti_bust': {
+        title: 'تمثال نفرتيتي',
+        description: 'تمثال نصفي للملكة نفرتيتي، زوجة أخناتون، يُعتبر أيقونة للجمال الأنثوي في العالم القديم.',
+        puzzle: 'لغز: ما هي الميزة المفقودة بشكل غامض في إحدى عيني تمثال نفرتيتي؟',
+        position: new THREE.Vector3(-150, 0, -150),
+        icon: 'fas fa-female',
+        goal: false,
+        isExplored: false
+    },
+    'seated_scribe': {
+        title: 'الكاتب الجالس',
+        description: 'تمثال من الحجر الجيري الملون يصور كاتبًا أثناء عمله، وهو يمثل أهمية التعليم في مصر القديمة.',
+        puzzle: 'لغز: ما هي الأداة التي كان يمسك بها الكاتب في يده والتي فقدت مع مرور الزمن؟',
+        position: new THREE.Vector3(150, 0, -150),
+        icon: 'fas fa-pen-alt',
+        goal: false,
+        isExplored: false
+    },
+    'anubis_shrine': {
+        title: 'مزار أنوبيس',
+        description: 'مزار خشبي مذهّب يصور الإله أنوبيس في هيئة ابن آوى راقد، وهو يحرس كنوز المقبرة.',
+        puzzle: 'لغز: ما هو الدور الرئيسي للإله أنوبيس في معتقدات العالم الآخر المصرية؟',
+        position: new THREE.Vector3(100, 0, -100),
+        icon: 'fas fa-dog',
+        goal: false,
+        isExplored: false
+    },
+    'book_of_dead': {
+        title: 'بردية كتاب الموتى',
+        description: 'مجموعة من النصوص الجنائزية والتعاويذ التي كانت توضع مع المتوفى لمساعدته في رحلته إلى العالم الآخر.',
+        puzzle: 'لغز: ما هو الاسم المصري الأصلي لهذه البرديات، والذي يعني "الخروج في النهار"؟',
+        position: new THREE.Vector3(-100, 0, 100),
+        icon: 'fas fa-scroll',
         goal: false,
         isExplored: false
     }
