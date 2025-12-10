@@ -47,43 +47,33 @@ const ItemTypes = { WORD: 'word' };
 const SortableWord = ({ id, word, index, moveWord, isLocked }: { id: any, word: string, index: number, moveWord: (dragIndex: number, hoverIndex: number) => void, isLocked: boolean }) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  // 1. Drop logic (what happens when an item is dragged over this word)
   const [, drop] = useDrop({
     accept: ItemTypes.WORD,
     hover(item: { index: number }, monitor) {
       if (!ref.current || isLocked) return;
-
-      const dragIndex = item.index; // Index of the dragged item
-      const hoverIndex = index;      // Index of the current item being hovered over
-
+      const dragIndex = item.index;
+      const hoverIndex = index;
       if (dragIndex === hoverIndex) return;
-
-      // Perform reordering
       moveWord(dragIndex, hoverIndex);
-
-      // Update the dragged item's index to avoid multiple move executions
       item.index = hoverIndex;
     },
   });
 
-  // 2. Drag logic (the word being dragged)
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.WORD,
-    item: { id, index },
+    item: () => ({ id, index }),
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    canDrag: !isLocked, // Cannot drag if the sentence is correct
+    canDrag: !isLocked,
   });
 
-  // Attach drag and drop functions to a single DOM element
   drag(drop(ref));
 
-  const wordClasses = `px-4 py-2 mx-1 my-1 rounded-full text-lg font-semibold shadow-md cursor-pointer transition-all duration-200 
-    ${isLocked ? 'bg-green-700 text-white' : 'bg-[#d6b876] text-[#0d284e] hover:bg-[#FFD700]'}
+  const wordClasses = `px-4 py-2 mx-1 my-1 rounded-full text-lg font-semibold shadow-md transition-all duration-200 
+    ${isLocked ? 'bg-green-700 text-white cursor-default' : 'bg-[#d6b876] text-[#0d284e] hover:bg-[#FFD700] cursor-grab active:cursor-grabbing'}
   `;
 
-  // Use opacity: 0 to temporarily hide the dragged item from its original position
   return (
     <div
       ref={ref}
@@ -95,49 +85,61 @@ const SortableWord = ({ id, word, index, moveWord, isLocked }: { id: any, word: 
   );
 };
 
-
 // ===================================
 // GameContent Component (uses DND Hooks)
 // ===================================
 const GameContent = () => {
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
-  const [currentWords, setCurrentWords] = useState<string[]>([]);
+  const [shuffledWords, setShuffledWords] = useState<string[]>([]);
+  const [arrangedWords, setArrangedWords] = useState<string[]>([]);
   const [isCorrect, setIsCorrect] = useState(false);
   const [message, setMessage] = useState('');
-  const [nilePoints, setNilePoints] = useState(250); // Updated Nile points
+  const [nilePoints, setNilePoints] = useState(250);
 
   const currentPuzzle = PUZZLES[currentPuzzleIndex];
   const correctSentence = currentPuzzle?.sentence;
 
-  // When a new puzzle loads, shuffle the words
   useEffect(() => {
     if (currentPuzzle) {
-      setCurrentWords(shuffleWords(currentPuzzle.sentence));
+      setShuffledWords(shuffleWords(currentPuzzle.sentence));
+      setArrangedWords([]);
       setIsCorrect(false);
       setMessage('');
     }
   }, [currentPuzzleIndex, currentPuzzle]);
 
-  // Function to reorder words on drop
   const moveWord = useCallback(
-    (dragIndex: number, hoverIndex: number) => {
-      setCurrentWords(prevWords => {
-        const newWords = [...prevWords];
-
-        // The actual reordering process
-        const [removed] = newWords.splice(dragIndex, 1);
-        newWords.splice(hoverIndex, 0, removed);
-
-        return newWords;
-      });
+    (dragIndex: number, hoverIndex: number, source: 'shuffled' | 'arranged') => {
+      if(source === 'arranged') {
+        setArrangedWords(prevWords => {
+          const newWords = [...prevWords];
+          const [removed] = newWords.splice(dragIndex, 1);
+          newWords.splice(hoverIndex, 0, removed);
+          return newWords;
+        });
+      }
     },
-    [],
+    []
   );
 
-  // Function to check the answer
+  const dropWord = useCallback((item: { word: string, index: number, source: 'shuffled' | 'arranged' }) => {
+    if (item.source === 'shuffled') {
+      setArrangedWords(prev => [...prev, item.word]);
+      setShuffledWords(prev => prev.filter((_, i) => i !== item.index));
+    }
+  }, []);
+
+  const returnWord = useCallback((item: { word: string, index: number, source: 'shuffled' | 'arranged' }) => {
+    if(item.source === 'arranged'){
+        setShuffledWords(prev => [...prev, item.word]);
+        setArrangedWords(prev => prev.filter((_, i) => i !== item.index));
+    }
+  }, []);
+
+
   const checkAnswer = useCallback(() => {
     if (!correctSentence) return;
-    const userSentence = currentWords.join(' ');
+    const userSentence = arrangedWords.join(' ');
 
     if (userSentence === correctSentence) {
       setIsCorrect(true);
@@ -147,20 +149,18 @@ const GameContent = () => {
       setIsCorrect(false);
       setMessage('حاول مجدداً! ترتيب الكلمات غير صحيح. تذكّر: الفعل يسبق الفاعل أحياناً.');
     }
-  }, [currentWords, correctSentence]);
+  }, [arrangedWords, correctSentence]);
 
-  // Function to move to the next puzzle
   const nextPuzzle = useCallback(() => {
     const nextIndex = currentPuzzleIndex + 1;
     if (nextIndex < PUZZLES.length) {
       setCurrentPuzzleIndex(nextIndex);
     } else {
       setMessage(`تهانينا يا ${ALIAS}! أكملت كل تحديات ترتيب الكلمات لهذا اليوم.`);
-      setIsCorrect(true); // For showing the final success message
+      setIsCorrect(true);
     }
   }, [currentPuzzleIndex]);
 
-  // Score Header Component
   const ScoreHeader = ({ alias, nilePoints }: { alias: string, nilePoints: number }) => (
     <div className="flex justify-between items-center p-4 bg-[#17365e] rounded-t-xl border-b-2 border-[#d6b876] shadow-lg">
       <div className="text-right">
@@ -175,6 +175,16 @@ const GameContent = () => {
     </div>
   );
 
+  const [, arrangeDrop] = useDrop(() => ({ 
+      accept: ItemTypes.WORD,
+      drop: (item: any) => dropWord(item)
+  }));
+  
+  const [, sourceDrop] = useDrop(() => ({ 
+      accept: ItemTypes.WORD,
+      drop: (item: any) => returnWord(item)
+  }));
+
   if (!currentPuzzle) {
     return (
       <div className="flex items-center justify-center text-white p-10">
@@ -183,104 +193,100 @@ const GameContent = () => {
     );
   }
 
-  // Drop Target for the main container (to prevent dragging outside the area)
-  const [, drop] = useDrop({
-    accept: ItemTypes.WORD,
-    drop() {
-      // No special logic needed for dropping on the container, as reordering logic is in 'hover' inside SortableWord
-      return;
-    }
-  });
-  
-  // Drop target for the source words area
-  const [, sourceDrop] = useDrop(() => ({ accept: ItemTypes.WORD }));
-
   return (
-    <div className="w-full max-w-2xl bg-[#0d284e] rounded-xl shadow-2xl dashboard-card" style={{ direction: 'rtl' }}>
+    <div className="w-full max-w-3xl bg-[#0d284e] rounded-xl shadow-2xl dashboard-card" style={{ direction: 'rtl' }}>
 
       <ScoreHeader alias={ALIAS} nilePoints={nilePoints} />
 
-      <div className="p-4 md:p-6">
-
-        {/* Challenge Title */}
+      <div className="p-4 md:p-8">
         <h2 className="text-3xl font-extrabold text-[#FFD700] mb-4 text-center royal-title">رتّب كلمات الفراعنة 👑</h2>
-        <p className="text-gray-300 text-lg mb-6 text-center">قم بسحب وإفلات الكلمات لترتيب الجملة المصرية العامية بشكل صحيح.</p>
-
-        {/* Sentence Area (Drop Container) */}
-        <div
-          ref={drop}
-          className={`min-h-[100px] p-4 border-2 rounded-xl flex flex-wrap justify-center items-center transition-colors duration-300
-            ${isCorrect ? 'border-green-500 bg-green-900/20' : 'border-gray-500 border-dashed bg-[#1c3d6d]'}
-          `}
-        >
-          {currentWords.map((word, index) => (
-            <SortableWord
-              key={`${word}-${index}`}
-              id={`${word}-${index}`}
-              word={word}
-              index={index}
-              moveWord={moveWord}
-              isLocked={isCorrect}
-            />
-          ))}
-          {currentWords.length === 0 && (
-            <p className="text-gray-400 text-lg">اسحب الكلمات إلى هنا لترتيب الجملة...</p>
-          )}
+        <p className="text-gray-300 text-lg mb-6 text-center">اسحب الكلمات لترتيب الجملة بالعامية المصرية.</p>
+        
+        <div ref={arrangeDrop} className={`min-h-[120px] p-4 border-2 rounded-xl flex flex-wrap justify-center items-center transition-colors duration-300 ${isCorrect ? 'border-green-500 bg-green-900/30' : 'border-gray-500 border-dashed bg-[#1c3d6d]'}`}>
+          {arrangedWords.length > 0 ? arrangedWords.map((word, index) => (
+            <DraggableWord key={`${word}-${index}`} id={`${word}-${index}`} word={word} index={index} source="arranged" moveWord={moveWord} isLocked={isCorrect} />
+          )) : <p className="text-gray-400 text-lg">اسحب الكلمات إلى هنا...</p>}
         </div>
 
-        {/* Translation and Support */}
+        <div ref={sourceDrop} className="min-h-[100px] mt-6 p-4 bg-[#17365e]/50 rounded-lg flex flex-wrap justify-center items-center">
+            {shuffledWords.map((word, index) => (
+               <DraggableWord key={`${word}-${index}`} id={`${word}-${index}`} word={word} index={index} source="shuffled" moveWord={moveWord} isLocked={isCorrect} />
+            ))}
+        </div>
+        
         <div className="mt-4 p-3 bg-[#17365e] rounded-lg shadow-inner">
-          <p className="text-sm text-gray-400">المعنى المراد في الفصحى:</p>
+          <p className="text-sm text-gray-400">المعنى المراد بالفصحى:</p>
           <p className="text-base font-bold text-white">{currentPuzzle.arabicTranslation}</p>
         </div>
 
-        {/* Evaluation Message */}
         {message && (
-          <div className={`mt-4 p-4 rounded-lg text-center font-bold shadow-lg 
-            ${isCorrect ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}
-          >
+          <div className={`mt-4 p-4 rounded-lg text-center font-bold shadow-lg ${isCorrect ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
             {message}
           </div>
         )}
 
-        {/* Action Buttons */}
         <div className="mt-6 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 sm:space-x-reverse">
           {!isCorrect ? (
-            <Button
-              onClick={checkAnswer}
-              className="cta-button px-8 py-3 text-lg rounded-full w-full sm:w-auto"
-            >
+            <Button onClick={checkAnswer} className="cta-button px-8 py-3 text-lg rounded-full w-full sm:w-auto">
               <i className="fas fa-check ml-2"></i> تحقق من الإجابة
             </Button>
           ) : (
-             <Button
-              onClick={nextPuzzle}
-              className="cta-button bg-green-600 hover:bg-green-700 px-8 py-3 text-lg rounded-full w-full sm:w-auto"
-            >
+            <Button onClick={nextPuzzle} className="cta-button bg-green-600 hover:bg-green-700 px-8 py-3 text-lg rounded-full w-full sm:w-auto">
               {currentPuzzleIndex < PUZZLES.length - 1 ? 'التحدي التالي' : 'إنهاء التحدي'}
               <i className="fas fa-arrow-left mr-2"></i>
             </Button>
           )}
-           <Link href="/" className="w-full sm:w-auto">
-             <Button variant="outline" className="utility-button w-full">
-                العودة للوحة التحكم
-             </Button>
+          <Link href="/" className="w-full sm:w-auto">
+            <Button variant="outline" className="utility-button w-full">العودة للوحة التحكم</Button>
           </Link>
         </div>
 
-        {/* Progress Indicator */}
         <p className="text-center text-sm text-gray-400 mt-4">
           التحدي {currentPuzzleIndex + 1} من {PUZZLES.length}
         </p>
-
       </div>
     </div>
   );
 };
 
-// ===================================
-// Main App Component (Wraps Context)
-// ===================================
+const DraggableWord = ({ id, word, index, source, moveWord, isLocked } : { id: any, word: string, index: number, source: 'shuffled' | 'arranged', moveWord: Function, isLocked: boolean }) => {
+    const ref = useRef<HTMLDivElement>(null);
+
+    const [, drop] = useDrop({
+        accept: ItemTypes.WORD,
+        hover(item: { index: number, source: 'shuffled' | 'arranged' }, monitor) {
+            if (!ref.current || isLocked || source === 'shuffled') return;
+            
+            const dragIndex = item.index;
+            const hoverIndex = index;
+            if (dragIndex === hoverIndex) return;
+            
+            moveWord(dragIndex, hoverIndex, 'arranged');
+            item.index = hoverIndex;
+        },
+    });
+
+    const [{ isDragging }, drag] = useDrag(() => ({
+        type: ItemTypes.WORD,
+        item: { word, index, source },
+        collect: (monitor) => ({
+            isDragging: !!monitor.isDragging(),
+        }),
+        canDrag: !isLocked,
+    }));
+    
+    drag(drop(ref));
+
+    const wordClasses = `px-4 py-2 mx-1 my-1 rounded-full text-lg font-semibold shadow-md transition-all duration-200 
+    ${isLocked ? 'bg-green-700 text-white cursor-default' : 'bg-[#d6b876] text-[#0d284e] hover:bg-[#FFD700] cursor-grab active:cursor-grabbing'}
+    `;
+
+    return (
+        <div ref={ref} className={wordClasses} style={{ opacity: isDragging ? 0.5 : 1 }}>
+            {word}
+        </div>
+    );
+};
 
 const WordScramblePage = () => {
   return (
