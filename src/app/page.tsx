@@ -99,6 +99,88 @@ export default function RoyalDashboard() {
           logout_button: "Log Out",
           login_button: "Log In",
       },
+      zh: {
+          title: "皇家控制面板", alias_label: "你的法老别名:", alias_placeholder: "在此输入你的法老名字...", alias_button: "更新别名",
+          library_button: "已掌握课程库", review_button: "需要复习的单词", level_label: "当前级别:", level_name: "尼罗河的门徒", metrics_title: "进度与资源统计",
+          words_mastered_label: "已掌握单词", nile_points_label: "尼罗河积分", streak_days_label: "连续天数", total_time_label: "总时间 (小时)",
+          challenges_title: "你接下来的挑战", current_challenge_title: "图画故事：在市场", current_challenge_desc: "买卖对话练习。",
+          start_button_text: "开始下一个挑战", progress_title: "级别进度", level_progress_text: "距离纸莎草抄写员还剩",
+          leaderboard_title: "法老排行榜",
+          completed_label: "已完成", locked_label: "已锁定",
+          user_id_label: "用户ID:",
+          leaderboard_1: "哈特谢普苏特女王", leaderboard_2: "智慧的阿蒙霍特普", leaderboard_4: "优雅的娜芙蒂蒂",
+          comic_studio_button: "漫画工作室",
+          museum_button: "虚拟博物馆",
+          store_button: "纸莎草商店",
+          tutor_button: "人工智能导师",
+          word_scramble_button: "单词拼凑挑战",
+          dialogue_challenge_button: "对话挑战",
+          placement_test_button: "开始水平测试",
+          booking_button: "皇家课程预订",
+          quran_button: "古兰经与圣训绿洲",
+          pronunciation_challenge_button: "发音挑战",
+          logout_button: "登出",
+          login_button: "登录"
+      },
+      fr: {
+        title: "Panneau de Contrôle Royal", alias_label: "Votre Alias Pharaonique:", alias_placeholder: "Entrez votre nom pharaonique...", alias_button: "Mettre à jour",
+        library_button: "Bibliothèque de Leçons", review_button: "Mots à réviser", level_label: "Niveau Actuel:", level_name: "Disciple du Nil", metrics_title: "Statistiques de Progrès",
+        words_mastered_label: "Mots Maîtrisés", nile_points_label: "Points du Nil", streak_days_label: "Jours Consécutifs", total_time_label: "Temps Total (h)",
+        challenges_title: "Vos Prochains Défis", current_challenge_title: "Histoire Illustrée: Au Marché", current_challenge_desc: "Pratique du dialogue d'achat.",
+        start_button_text: "Commencer le Défi", progress_title: "Progression de Niveau", level_progress_text: "Restant pour Scribe",
+        leaderboard_title: "Classement des Pharaons",
+        completed_label: "Terminé", locked_label: "Verrouillé",
+        user_id_label: "ID Utilisateur:",
+        leaderboard_1: "Reine Hatchepsout", leaderboard_2: "Amenhotep le Sage", leaderboard_4: "Néfertiti la Gracieuse",
+        comic_studio_button: "Studio de BD",
+        museum_button: "Musée Virtuel",
+        store_button: "Magasin de Papyri",
+        tutor_button: "Tuteur IA",
+        word_scramble_button: "Défi de Mots",
+        dialogue_challenge_button: "Défi de Dialogue",
+        placement_test_button: "Commencer le Test",
+        booking_button: "Réservation de Leçon",
+        quran_button: "Oasis du Coran",
+        pronunciation_challenge_button: "Défi de Prononciation",
+        logout_button: "Déconnexion",
+        login_button: "Connexion",
+      },
+      es: { 
+        title: "Panel de Control Real", alias_label: "Tu Alias Faraónico:", alias_placeholder: "Introduce tu nombre...", alias_button: "Actualizar",
+        level_name: "Discípulo del Nilo", metrics_title: "Estadísticas de Progreso",
+        words_mastered_label: "Palabras Dominadas", nile_points_label: "Puntos del Nilo", streak_days_label: "Días Consecutivos", total_time_label: "Tiempo Total (h)",
+        challenges_title: "Tus Próximos Desafíos", current_challenge_title: "Historia Ilustrada: En el Mercado",
+        start_button_text: "Siguiente Desafío", progress_title: "Progreso de Nivel", level_progress_text: "Restante para Escriba",
+        leaderboard_title: "Clasificación de Faraones",
+        logout_button: "Cerrar Sesión", login_button: "Iniciar Sesión"
+      },
+      it: { 
+        title: "Pannello di Controllo Reale", alias_label: "Il Tuo Alias Faraonico:", alias_placeholder: "Inserisci il tuo nome...", alias_button: "Aggiorna",
+        level_name: "Discepolo del Nilo", metrics_title: "Statistiche di Progresso",
+        words_mastered_label: "Parole Padroneggiate", nile_points_label: "Punti del Nilo", streak_days_label: "Giorni Consecutivi", total_time_label: "Tempo Totale (ore)",
+        challenges_title: "Le Tue Prossime Sfide", current_challenge_title: "Storia Illustrata: Al Mercato",
+        start_button_text: "Prossima Sfida", progress_title: "Avanzamento di Livello", level_progress_text: "Rimanente per Scriba",
+        leaderboard_title: "Classifica dei Faraoni",
+        logout_button: "Esci", login_button: "Accedi"
+      },
+      nl: { 
+        title: "Koninklijk Bedieningspaneel", alias_label: "Jouw Faraonische Alias:", alias_placeholder: "Voer je naam in...", alias_button: "Update",
+        level_name: "Discipel van de Nijl", metrics_title: "Voortgangsstatistieken",
+        words_mastered_label: "Beheerste Woorden", nile_points_label: "Nijlpunten", streak_days_label: "Opeenvolgende Dagen", total_time_label: "Totale Tijd (u)",
+        challenges_title: "Je Komende Uitdagingen", current_challenge_title: "Geïllustreerd Verhaal: Op de Markt",
+        start_button_text: "Volgende Uitdaging", progress_title: "Niveauvoortgang", level_progress_text: "Resterend voor Schrijver",
+        leaderboard_title: "Klassement van de Farao's",
+        logout_button: "Uitloggen", login_button: "Inloggen"
+      },
+      de: { 
+        title: "Königliches Kontrollfeld", alias_label: "Dein Pharaonischer Alias:", alias_placeholder: "Gib deinen Namen ein...", alias_button: "Aktualisieren",
+        level_name: "Schüler des Nils", metrics_title: "Fortschrittsstatistiken",
+        words_mastered_label: "Beherrschte Wörter", nile_points_label: "Nil-Punkte", streak_days_label: "Aufeinanderfolgende Tage", total_time_label: "Gesamtzeit (Std.)",
+        challenges_title: "Deine Nächsten Herausforderungen", current_challenge_title: "Illustrierte Geschichte: Auf dem Markt",
+        start_button_text: "Nächste Herausforderung", progress_title: "Level-Fortschritt", level_progress_text: "Verbleibend für Schreiber",
+        leaderboard_title: "Rangliste der Pharaonen",
+        logout_button: "Ausloggen", login_button: "Einloggen"
+      }
     };
   
     function setLanguage(langCode: string) {
@@ -381,6 +463,8 @@ export default function RoyalDashboard() {
     </div>
   );
 }
+
+    
 
     
 
