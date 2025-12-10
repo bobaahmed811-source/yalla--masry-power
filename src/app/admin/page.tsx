@@ -103,11 +103,12 @@ const AdminDashboardPage = () => {
   
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-nile-dark text-white p-4">
-          <h1 className="text-3xl font-bold royal-title mb-4">محتوى محمي</h1>
-          <p className="text-sand-ochre mb-6">يجب تسجيل الدخول للوصول إلى ديوان الإدارة.</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-nile-dark text-white p-4 text-center">
+          <i className="fas fa-lock text-5xl text-gold-accent mb-6"></i>
+          <h1 className="text-3xl font-bold royal-title mb-4">ديوان الإدارة الملكية (محتوى محمي)</h1>
+          <p className="text-sand-ochre mb-8 max-w-md">عفواً أيها الزائر، هذه القاعة مخصصة فقط لحكام المملكة. يرجى تسجيل الدخول باستخدام أوراق اعتمادك الملكية للوصول إلى ديوان الإدارة.</p>
           <Link href="/login">
-              <Button className="cta-button">تسجيل الدخول</Button>
+              <Button className="cta-button text-lg px-8">تسجيل الدخول إلى الديوان</Button>
           </Link>
       </div>
     )
