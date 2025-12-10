@@ -227,7 +227,7 @@ service cloud.firestore {
      * @principle Path-based ownership ensures users can only write to their own subcollection.
      */
     match /artifacts/{appId}/users/{userId}/comic_performances/{performanceId} {
-      allow get, list, update, delete: if false;
+      allow get, list, update, delete: if isOwner(userId);
       allow create: if isOwner(userId) && request.resource.data.userId == userId;
     }
   }

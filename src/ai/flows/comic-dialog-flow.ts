@@ -9,7 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 const ComicDialogInputSchema = z.object({
   scene: z
@@ -46,17 +46,16 @@ export async function comicDialogFlow(
     sceneDescriptions[input.scene] ||
     'A general conversation between two children.';
 
-  const prompt = ai.definePrompt({
-    name: 'comicDialogPrompt',
-    input: { schema: ComicDialogInputSchema },
-    output: { schema: ComicDialogOutputSchema },
+  const { output } = await ai.generate({
     prompt: `You are a scriptwriter specializing in comic books for children learning Egyptian Colloquial Arabic (ECA).
-Your task is to generate a short, natural, and slightly humorous 3-line dialogue for the following scene: {{{scene}}}
+Your task is to generate a short, natural, and slightly humorous 3-line dialogue for the following scene: ${fullScene}
 
 The dialogue must be entirely in Egyptian Colloquial Arabic (ECA), simple, and clear.
 The output must be structured as an array of exactly three short sentences.`,
+    output: {
+      schema: ComicDialogOutputSchema,
+    },
   });
-
-  const { output } = await prompt({ scene: fullScene });
+  
   return output!;
 }
