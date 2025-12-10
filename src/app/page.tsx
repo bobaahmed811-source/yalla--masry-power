@@ -70,6 +70,7 @@ export default function RoyalDashboard() {
           word_scramble_button: "تحدي الكلمات",
           dialogue_challenge_button: "تحدي الحوار",
           placement_test_button: "ابدأ تحديد المستوى",
+          booking_button: "حجز الدروس الملكية",
           logout_button: "تسجيل الخروج",
           login_button: "تسجيل الدخول"
       },
@@ -90,6 +91,7 @@ export default function RoyalDashboard() {
           word_scramble_button: "Word Scramble",
           dialogue_challenge_button: "Dialogue Challenge",
           placement_test_button: "Start Placement Test",
+          booking_button: "Royal Lesson Booking",
           logout_button: "Log Out",
           login_button: "Log In",
       },
@@ -123,6 +125,7 @@ export default function RoyalDashboard() {
         if(querySelector('#tutor-button-text')) querySelector('#tutor-button-text').textContent = texts.tutor_button;
         if(querySelector('#word-scramble-button-text')) querySelector('#word-scramble-button-text').textContent = texts.word_scramble_button;
         if(querySelector('#dialogue-challenge-button-text')) querySelector('#dialogue-challenge-button-text').textContent = texts.dialogue_challenge_button;
+        if(querySelector('#booking-button-text')) querySelector('#booking-button-text').textContent = texts.booking_button;
 
         if (user) {
           if (querySelector('#auth-link-text')) querySelector('#auth-link-text').textContent = texts.logout_button;
@@ -229,6 +232,10 @@ export default function RoyalDashboard() {
                 <Link href="/placement-test" id="placement-test-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-green-400 text-green-400">
                     <i className="fas fa-tasks text-xl ml-3"></i>
                     <span id="placement-test-button-text">ابدأ تحديد المستوى</span>
+                </Link>
+                <Link href="/booking" id="booking-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-teal-400 text-teal-400">
+                    <i className="fas fa-calendar-check text-xl ml-3"></i>
+                    <span id="booking-button-text">حجز الدروس الملكية</span>
                 </Link>
                 <Link href="/comic-studio" id="comic-studio-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-amber-400 text-amber-400">
                     <i className="fas fa-paint-brush text-xl ml-3"></i>
