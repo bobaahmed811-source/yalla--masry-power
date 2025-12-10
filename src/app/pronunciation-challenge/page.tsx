@@ -84,10 +84,6 @@ const lang: Record<string, Record<string, string>> = {
 
 export default function PronunciationChallengePage() {
   const [currentLang, setCurrentLang] = useState('ar');
-  const [mentorAudioUrl, setMentorAudioUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isMentorPlaying, setIsMentorPlaying] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [userAudioUrl, setUserAudioUrl] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -96,35 +92,6 @@ export default function PronunciationChallengePage() {
   const challengePhrase = 'صباح الخير، أنا كويس، متشكر.';
   const texts = lang[currentLang] || lang.ar;
   const isRtl = currentLang === 'ar';
-
-  const fetchAudio = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    setMentorAudioUrl(null);
-
-    const result = await getSpeechAudio({ text: challengePhrase });
-
-    if ('success' in result && result.success) {
-      setMentorAudioUrl(result.success as string);
-      toast({
-        title: `✅ ${texts.audio_ready}`,
-        description: texts.audio_ready_desc,
-      });
-    } else {
-      const errorMessage = (result as { error: string }).error || texts.error;
-      setError(errorMessage);
-      toast({
-        variant: 'destructive',
-        title: `❌ ${texts.audio_error_title}`,
-        description: errorMessage,
-      });
-    }
-    setIsLoading(false);
-  }, [challengePhrase, texts, toast]);
-
-  useEffect(() => {
-    fetchAudio();
-  }, [fetchAudio]);
   
   useEffect(() => {
     // Cleanup user audio URL on unmount
@@ -137,27 +104,11 @@ export default function PronunciationChallengePage() {
 
 
   const handlePlayMentorAudio = () => {
-    if (mentorAudioUrl && !isRecording) {
-      const audio = new Audio(mentorAudioUrl);
-      setIsMentorPlaying(true);
-      audio.play();
-      audio.onended = () => {
-        setIsMentorPlaying(false);
-        toast({
-            title: `✅ ${texts.your_turn}`,
-            description: texts.record_prompt,
-        });
-      };
-      audio.onerror = () => {
-        setIsMentorPlaying(false);
-        setError(texts.error);
-        toast({
-          variant: 'destructive',
-          title: `❌ ${texts.playback_error_title}`,
-          description: texts.playback_error_desc,
-        });
-      }
-    }
+    toast({
+        variant: 'destructive',
+        title: '❌ الميزة معطلة',
+        description: 'ميزة تحويل النص إلى كلام معطلة مؤقتاً بسبب المشاكل التقنية.',
+    });
   };
   
   const startRecording = async () => {
@@ -259,10 +210,10 @@ export default function PronunciationChallengePage() {
                 <Button
                     id="play-button"
                     onClick={handlePlayMentorAudio}
-                    disabled={isLoading || !mentorAudioUrl || isMentorPlaying || isRecording}
-                    className="shadow-lg w-24 h-24 rounded-full bg-gold-accent text-nile-dark text-3xl mx-auto flex items-center justify-center hover:bg-yellow-300 transition-all duration-300 disabled:bg-gray-400 transform hover:scale-110"
+                    disabled={true} // Feature is disabled
+                    className="shadow-lg w-24 h-24 rounded-full bg-gold-accent text-nile-dark text-3xl mx-auto flex items-center justify-center hover:bg-yellow-300 transition-all duration-300 disabled:bg-gray-500 disabled:opacity-50"
                 >
-                    {isLoading ? <Loader className="animate-spin" /> : isMentorPlaying ? <Pause /> : <Play />}
+                    <Play />
                 </Button>
                 <span className="text-sm font-bold text-sand-ochre">{texts.play_audio}</span>
             </div>
@@ -272,7 +223,6 @@ export default function PronunciationChallengePage() {
                 <Button
                     id="record-button"
                     onClick={isRecording ? stopRecording : startRecording}
-                    disabled={isMentorPlaying}
                     className={`shadow-lg w-24 h-24 rounded-full text-white text-3xl mx-auto flex items-center justify-center transition-all duration-300 transform hover:scale-110 ${isRecording ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'}`}
                 >
                     {isRecording ? <StopCircle /> : <Mic />}
@@ -287,18 +237,6 @@ export default function PronunciationChallengePage() {
                 <audio src={userAudioUrl} controls className="w-full" />
             </div>
            )}
-
-          {isLoading && (
-               <p className="text-sm text-sand-ochre flex items-center justify-center gap-2">
-                 <Loader className="animate-spin" size={16} /> {texts.loading}
-               </p>
-          )}
-
-          {error && (
-            <p className="text-sm text-red-500 flex items-center justify-center gap-2">
-              <AlertTriangle size={16} /> {error}
-            </p>
-          )}
 
           <div className={`mt-10 flex justify-end`}>
             <Button

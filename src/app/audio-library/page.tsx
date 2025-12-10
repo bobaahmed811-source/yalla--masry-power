@@ -51,36 +51,14 @@ const audioLibraryData = [
 
 // Phrase Row Component
 const PhraseRow = ({ phrase }: { phrase: { id: string, text: string, translation: string }}) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handlePlayAudio = async () => {
-    if (audioUrl) {
-      new Audio(audioUrl).play();
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    const result = await getSpeechAudio({ text: phrase.text });
-    setIsLoading(false);
-
-    if ('success' in result && result.success) {
-      setAudioUrl(result.success as string);
-      const audio = new Audio(result.success as string);
-      audio.play();
-      toast({ title: '🎵 تم التشغيل', description: `جاري تشغيل: "${phrase.text}"` });
-    } else {
-      const errorMessage = (result as {error: string}).error || 'فشل توليد الصوت.';
-      setError(errorMessage);
-      toast({
+    toast({
         variant: 'destructive',
-        title: '❌ خطأ',
-        description: errorMessage,
-      });
-    }
+        title: '❌ الميزة معطلة',
+        description: 'ميزة تحويل النص إلى كلام معطلة مؤقتاً بسبب المشاكل التقنية.',
+    });
   };
 
   return (
@@ -92,17 +70,11 @@ const PhraseRow = ({ phrase }: { phrase: { id: string, text: string, translation
       <Button
         size="icon"
         onClick={handlePlayAudio}
-        disabled={isLoading}
-        className="cta-button rounded-full w-12 h-12 flex-shrink-0"
+        disabled={true} // Feature is disabled
+        className="cta-button rounded-full w-12 h-12 flex-shrink-0 disabled:bg-gray-500 disabled:opacity-50"
         aria-label={`Listen to "${phrase.text}"`}
       >
-        {isLoading ? (
-          <Loader className="w-6 h-6 animate-spin" />
-        ) : error ? (
-          <AlertCircle className="w-6 h-6 text-red-500" />
-        ) : (
           <Volume2 className="w-6 h-6" />
-        )}
       </Button>
     </div>
   );
