@@ -151,7 +151,7 @@ export default function HomePage() {
             </div>
             
              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-                <Link href="#" className="col-span-full utility-button px-6 py-4 text-2xl font-black rounded-full flex items-center justify-center border-green-400 text-green-400 hover:bg-green-900/50">
+                <Link href="/learning-path" className="col-span-full utility-button px-6 py-4 text-2xl font-black rounded-full flex items-center justify-center border-green-400 text-green-400 hover:bg-green-900/50">
                     <i className="fas fa-map-signs text-2xl ml-3"></i>
                     <span>ابدأ من هنا: مسار التعلم الملكي</span>
                 </Link>
@@ -317,3 +317,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
