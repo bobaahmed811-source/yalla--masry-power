@@ -61,6 +61,7 @@ service cloud.firestore {
     match /products/{productId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
     match /books/{bookId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
     match /hadiths/{hadithId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
+    match /phrases/{phraseId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
     
     // Course content - should require enrollment
     match /courses/{courseId}/{subcollection}/{docId} {
