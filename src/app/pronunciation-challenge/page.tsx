@@ -341,7 +341,7 @@ export default function PronunciationChallengePage() {
 
           <div className={cn("mt-10 flex", isRtl ? "justify-start" : "justify-end")}>
             <Button
-              disabled={!userAudioUrl || !phrases}
+              disabled={!phrases || phrases.length === 0}
               className="cta-button px-6 py-3 text-lg rounded-full flex items-center"
               onClick={handleNextChallenge}
             >
