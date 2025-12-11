@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,8 +12,8 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useUser, useAuth, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useUser, useAuth, useDoc, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, collection, query, where, getDocs } from 'firebase/firestore';
 import { updateProfileNonBlocking } from '@/firebase/non-blocking-login';
 import {
   ArrowRight,
@@ -49,6 +49,16 @@ interface UserProfile {
     name: string;
     email: string;
     nilePoints?: number;
+}
+
+interface Progress {
+    id: string;
+    courseId: string;
+    completedLessons: string[];
+}
+
+interface Lesson {
+    id: string;
 }
 
 const StatCard = ({
@@ -157,18 +167,44 @@ const AliasManagement = ({ user, toast }: { user: any, toast: any }) => {
 }
 
 export default function HomePage() {
-  const { user, isUserLoading, firestore } = useUser(true); // Request firestore instance
+  const { user, isUserLoading, firestore } = useUser(true);
   const auth = useAuth();
   const { toast } = useToast();
+
+  // State for dynamic dashboard data
+  const [lessonsCompleted, setLessonsCompleted] = useState(0);
+  const [totalLessons, setTotalLessons] = useState(0);
 
   const userDocRef = useMemoFirebase(() => {
     if (!user || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
 
+  const progressCollectionRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return collection(firestore, `users/${user.uid}/progress`);
+  }, [user, firestore]);
+  
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
-
+  const { data: progresses, isLoading: isProgressLoading } = useCollection<Progress>(progressCollectionRef);
+  
   const nilePoints = userProfile?.nilePoints ?? 0;
+  const progressPercentage = totalLessons > 0 ? (lessonsCompleted / totalLessons) * 100 : 0;
+
+  useEffect(() => {
+    const fetchCourseData = async () => {
+        if (progresses && progresses.length > 0 && firestore) {
+            const currentProgress = progresses[0]; // Assuming one course for now
+            setLessonsCompleted(currentProgress.completedLessons.length);
+
+            const lessonsQuery = query(collection(firestore, `courses/${currentProgress.courseId}/lessons`));
+            const lessonsSnapshot = await getDocs(lessonsQuery);
+            setTotalLessons(lessonsSnapshot.size);
+        }
+    };
+    fetchCourseData();
+  }, [progresses, firestore]);
+
 
   const handleSignOut = () => {
     if (auth) {
@@ -187,7 +223,7 @@ export default function HomePage() {
       style={{ direction: 'rtl' }}
     >
       <div className="max-w-7xl mx-auto">
-        {isUserLoading ? (
+        {isUserLoading || isProgressLoading ? (
           <div className="text-center p-10 flex justify-center items-center h-[80vh]">
             <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
             <p className="text-xl text-sand-ochre mr-4">
@@ -236,7 +272,7 @@ export default function HomePage() {
                   />
                   <StatCard
                     icon={<BookOpen className="h-6 w-6 text-sand-ochre" />}
-                    value="0 من 0"
+                    value={`${lessonsCompleted} من ${totalLessons}`}
                     label="الدروس المكتملة"
                   />
               </div>
@@ -249,7 +285,7 @@ export default function HomePage() {
                     <CardContent>
                         <p className="text-sand-ochre mb-4">أنتِ حالياً في مستوى: <span className="font-bold text-white">تلميذ النيل</span></p>
                         <div className="progress-bar-royal mb-4">
-                           <div className="progress-fill-royal" style={{ width: '0%' }}></div>
+                           <div className="progress-fill-royal" style={{ width: `${progressPercentage}%` }}></div>
                         </div>
                         <div className="flex justify-between text-xs text-sand-ochre">
                             <span>المستوى الحالي</span>
@@ -424,4 +460,4 @@ export default function HomePage() {
   );
 }
 
-  
+    
