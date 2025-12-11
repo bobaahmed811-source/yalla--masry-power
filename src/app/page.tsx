@@ -43,9 +43,11 @@ import {
   Target,
   MessagesSquare,
   Globe,
+  Medal,
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
+import { Badge, getBadgeByName, type BadgeInfo } from '@/lib/badges';
 
 interface Progress {
     id: string;
@@ -174,6 +176,17 @@ const AliasManagement = ({ user, toast }: { user: any, toast: any }) => {
     );
 }
 
+const BadgeDisplay = ({ badgeInfo }: { badgeInfo: BadgeInfo }) => {
+    const Icon = badgeInfo.icon;
+    return (
+        <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-nile-dark/50" title={badgeInfo.description}>
+            <Icon className="w-8 h-8" style={{ color: badgeInfo.color }} />
+            <span className="text-xs mt-1 text-center text-sand-ochre">{badgeInfo.name}</span>
+        </div>
+    );
+};
+
+
 export default function HomePage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -240,6 +253,7 @@ export default function HomePage() {
 
 
   const progressPercentage = totalLessons > 0 ? (lessonsCompleted / totalLessons) * 100 : 0;
+  const userBadges: BadgeInfo[] = user?.badges?.map((badgeName: string) => getBadgeByName(badgeName)).filter((b: BadgeInfo | null) => b !== null) as BadgeInfo[] || [];
 
 
   const handleSignOut = () => {
@@ -318,23 +332,37 @@ export default function HomePage() {
                {/* Progress and Achievements Section */}
                 <Card className="dashboard-card mb-8">
                     <CardHeader>
-                        <CardTitle className="royal-title text-2xl">تقدمكِ في المملكة</CardTitle>
+                        <CardTitle className="royal-title text-2xl">تقدمكِ وأوسمتكِ في المملكة</CardTitle>
                     </CardHeader>
                     <CardContent>
-                       {isStatsLoading ? (
-                            <Loader2 className="h-6 w-6 animate-spin text-sand-ochre"/>
-                       ) : (
-                        <>
-                          <p className="text-sand-ochre mb-4">لقبك الملكي الحالي: <span className="font-bold text-white text-lg">{royalTitle}</span></p>
-                          <div className="progress-bar-royal mb-4">
-                            <div className="progress-fill-royal" style={{ width: `${progressPercentage}%` }}></div>
-                          </div>
-                          <div className="flex justify-between text-xs text-sand-ochre">
-                              <span>المستوى الحالي</span>
-                              <span>المستوى التالي: كاتب البردي</span>
-                          </div>
-                        </>
-                       )}
+                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                           <div className="md:col-span-2">
+                               {isStatsLoading ? (
+                                    <Loader2 className="h-6 w-6 animate-spin text-sand-ochre"/>
+                               ) : (
+                                <>
+                                  <p className="text-sand-ochre mb-4">لقبك الملكي الحالي: <span className="font-bold text-white text-lg">{royalTitle}</span></p>
+                                  <div className="progress-bar-royal mb-4">
+                                    <div className="progress-fill-royal" style={{ width: `${progressPercentage}%` }}></div>
+                                  </div>
+                                  <div className="flex justify-between text-xs text-sand-ochre">
+                                      <span>المستوى الحالي</span>
+                                      <span>المستوى التالي: كاتب البردي</span>
+                                  </div>
+                                </>
+                               )}
+                           </div>
+                           <div>
+                                <h3 className="text-sand-ochre mb-4 font-bold">ديوان الشارات الملكية</h3>
+                                {userBadges.length > 0 ? (
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                                        {userBadges.map(badge => <BadgeDisplay key={badge.name} badgeInfo={badge} />)}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-400">لم تحصلي على أي شارات بعد. أكملي التحديات لتبدأي!</p>
+                                )}
+                           </div>
+                       </div>
                     </CardContent>
                 </Card>
 
@@ -533,5 +561,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    

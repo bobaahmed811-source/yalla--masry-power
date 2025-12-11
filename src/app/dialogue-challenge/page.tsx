@@ -8,8 +8,8 @@ import Link from 'next/link';
 import { User, Store, Crown, Medal, Skull, Loader2, Lock, Gem } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getDialogueEvaluation } from './actions';
-import { doc, updateDoc, increment } from 'firebase/firestore';
-
+import { doc, updateDoc, increment, arrayUnion } from 'firebase/firestore';
+import { Badge, getBadgeByName, type BadgeInfo } from '@/lib/badges';
 
 // === Story Data ===
 const storyScenario = [
@@ -72,13 +72,12 @@ const ScoreHeader = ({ alias, nilePoints }: { alias: string, nilePoints: number 
   </div>
 );
 
-const DialogueBubble = React.forwardRef<HTMLDivElement, { speaker: string; text: string; isUser: boolean; isEvaluating: boolean }>(
-  ({ speaker, text, isUser, isEvaluating }, ref) => {
+const DialogueBubble = React.forwardRef<HTMLDivElement, { speaker: string; text: string; isUser: boolean; isEvaluating: boolean, Icon: React.ElementType }>(
+  ({ speaker, text, isUser, isEvaluating, Icon }, ref) => {
     const baseClasses = "max-w-[80%] p-3 rounded-xl shadow-lg mb-4 transition-all duration-300";
     const bubbleClasses = isUser
       ? "bg-gold-accent/20 text-white ml-auto rounded-br-none border border-gold-accent"
       : "bg-nile text-gray-100 mr-auto rounded-tl-none border border-sand-ochre/50";
-    const Icon = isUser ? User : Store;
     const iconColor = isUser ? "text-gold-accent" : "text-sand-ochre";
 
     return (
@@ -100,6 +99,7 @@ const DialogueBubble = React.forwardRef<HTMLDivElement, { speaker: string; text:
 );
 DialogueBubble.displayName = "DialogueBubble";
 
+
 // === Main Component ===
 
 export default function DialogueChallengePage() {
@@ -107,6 +107,7 @@ export default function DialogueChallengePage() {
   const { toast } = useToast();
   
   const [nilePoints, setNilePoints] = useState(0); 
+  const [userBadges, setUserBadges] = useState<string[]>([]);
 
   const [dialogue, setDialogue] = useState<any[]>([]);
   const [currentStepId, setCurrentStepId] = useState(1);
@@ -114,14 +115,14 @@ export default function DialogueChallengePage() {
   const [feedback, setFeedback] = useState<{ message: string; score: number; isPositive: boolean } | null>(null);
   const [isChallengeComplete, setIsChallengeComplete] = useState(false);
   const dialogueEndRef = useRef<HTMLDivElement>(null);
+  const [awardedBadge, setAwardedBadge] = useState<BadgeInfo | null>(null);
 
   const alias = user?.displayName || "الزائر الملكي";
 
   useEffect(() => {
-    if (user && typeof user.nilePoints === 'number') {
-      setNilePoints(user.nilePoints);
-    } else if (user) {
-      setNilePoints(0);
+    if (user) {
+        setNilePoints(user.nilePoints || 0);
+        setUserBadges(user.badges || []);
     }
   }, [user]);
 
@@ -132,7 +133,7 @@ export default function DialogueChallengePage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [dialogue, feedback]);
+  }, [dialogue, feedback, awardedBadge]);
 
 
   useEffect(() => {
@@ -190,6 +191,14 @@ export default function DialogueChallengePage() {
                       setCurrentStepId(choice.nextId);
                   } else {
                       setIsChallengeComplete(true);
+                      if (!userBadges.includes(Badge.MarketDialogue)) {
+                          const badgeInfo = getBadgeByName(Badge.MarketDialogue);
+                          setAwardedBadge(badgeInfo);
+                          setUserBadges(prev => [...prev, Badge.MarketDialogue]);
+                          updateDoc(userRef, {
+                              badges: arrayUnion(Badge.MarketDialogue)
+                          });
+                      }
                   }
               }
             }, 4000); // Let user read feedback
@@ -210,7 +219,7 @@ export default function DialogueChallengePage() {
           }
       });
   
-  }, [alias, currentStepId, isEvaluating, isChallengeComplete, toast, user, firestore]);
+  }, [alias, currentStepId, isEvaluating, isChallengeComplete, toast, user, firestore, userBadges]);
   
   
   if (isUserLoading) {
@@ -239,6 +248,8 @@ export default function DialogueChallengePage() {
   const currentDialogueItem = dialogue[dialogue.length - 1];
   const currentOptions = currentDialogueItem?.options;
 
+  const HatshepsutIcon = () => <Crown className="w-6 h-6"/>;
+
   return (
     <div className="min-h-screen bg-[#0d284e] p-4 md:p-8 flex items-center justify-center">
       <div className="w-full max-w-2xl bg-[#0d284e] rounded-xl shadow-2xl dashboard-card" style={{ direction: 'rtl' }}>
@@ -246,6 +257,11 @@ export default function DialogueChallengePage() {
         
         <div className="p-4 md:p-6 h-[70vh] flex flex-col">
           <div className="flex-grow overflow-y-auto space-y-4 pb-4 px-2">
+            <div className="flex items-center gap-2 text-sand-ochre mb-4">
+                <HatshepsutIcon />
+                <p className="text-sm font-bold">المرشدة حتشبسوت:</p>
+                <p className="text-sm italic">"أثبتي جدارتك في حوار السوق يا سليلة الملوك!"</p>
+            </div>
             {dialogue.map((item, index) => (
                 <DialogueBubble 
                     key={index}
@@ -254,6 +270,7 @@ export default function DialogueChallengePage() {
                     text={item.text} 
                     isUser={item.isUser} 
                     isEvaluating={isEvaluating && item.id === currentStepId && item.isUser}
+                    Icon={item.isUser ? User : Store}
                 />
             ))}
             {feedback && (
@@ -269,7 +286,15 @@ export default function DialogueChallengePage() {
               <div ref={dialogueEndRef} className="p-4 bg-gold-accent text-nile-dark font-bold text-center rounded-lg mt-6 shadow-2xl border-2 border-nile-dark">
                 <Crown className="w-12 h-12 mx-auto mb-2"/>
                 <p className="text-xl">تهانينا يا {alias}، لقد أتقنت حوار السوق!</p>
-                <p className="text-sm mt-1">يمكنك الآن العودة إلى لوحة التحكم الملكية.</p>
+                 {awardedBadge && (
+                    <div className="mt-4 p-2 bg-nile-dark/20 rounded-lg">
+                        <p className="text-sm mb-2">لقد حصلت على وسام جديد!</p>
+                        <div className="flex items-center justify-center gap-2">
+                            <awardedBadge.icon className="w-8 h-8" style={{color: awardedBadge.color}}/>
+                            <span className="text-lg font-bold">{awardedBadge.name}</span>
+                        </div>
+                    </div>
+                )}
               </div>
             )}
           </div>

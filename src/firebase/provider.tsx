@@ -12,6 +12,9 @@ import { createInitialProgress } from '@/lib/course-utils';
 
 interface FullUser extends User {
     nilePoints?: number;
+    badges?: string[];
+    goal?: string;
+    level?: string;
 }
 interface FirebaseProviderProps {
   children: ReactNode;
@@ -131,6 +134,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
                   alias: firebaseUser.displayName || `ملكة ${firebaseUser.uid.substring(0,5)}`, 
                   registrationDate: new Date().toISOString(),
                   nilePoints: 0,
+                  badges: [],
               };
               await setDoc(userDocRef, newUserDoc);
               userData = newUserDoc;
@@ -144,6 +148,9 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
               ...firebaseUser,
               nilePoints: userData?.nilePoints ?? 0,
               displayName: userData?.alias || firebaseUser.displayName, 
+              badges: userData?.badges ?? [],
+              goal: userData?.goal,
+              level: userData?.level,
             };
 
             setUserAuthState({ user: fullUser, isUserLoading: false, userError: null });
