@@ -1,0 +1,22 @@
+{
+  "name": "Yalla Masry Academy",
+  "short_name": "Yalla Masry",
+  "description": "The Royal Way for Women & Children to Learn Egyptian Arabic",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#0d284e",
+  "background_color": "#0d284e",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+}

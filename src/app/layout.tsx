@@ -55,6 +55,8 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  // PWA manifest
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -68,6 +70,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=El+Messiri:wght@400;700;900&family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+        <meta name="theme-color" content="#0d284e" />
       </head>
       <body>
         <FirebaseClientProvider>
