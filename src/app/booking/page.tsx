@@ -3,7 +3,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection } from 'firebase/firestore';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -113,7 +113,7 @@ export default function BookingPage() {
     const purchaseData = {
         userId: user.uid,
         productId: `lesson_${selectedLesson.instructorId}_${selectedLesson.date}_${selectedLesson.time}`,
-        productDescription: `حجز درس مع ${selectedLesson.teacherName} في ${formatDate(selectedLesson.date)} الساعة ${selectedLesson.time}`,
+        productName: `حجز درس مع ${selectedLesson.teacherName} في ${formatDate(selectedLesson.date)} الساعة ${selectedLesson.time}`,
         price: selectedLesson.price,
         status: 'Awaiting Payment' as const,
         purchaseDate: new Date().toISOString(),
