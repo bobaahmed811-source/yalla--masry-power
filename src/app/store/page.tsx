@@ -66,7 +66,7 @@ export default function StorePage() {
     }
 
     if (isGift && (!recipientEmail || !/^\S+@\S+\.\S+$/.test(recipientEmail))) {
-        setPaymentMessage({ type: 'error', title: 'خطأ في بيانات الهدية', body: 'الرجاء إدخال بريد إلكتروني صحيح للشخص الذي ستهديه المنتج.' });
+        toast({ variant: 'destructive', title: 'خطأ في بيانات الهدية', description: 'الرجاء إدخال بريد إلكتروني صحيح للشخص الذي ستهديه المنتج.' });
         setIsSubmitting(false);
         return;
     }
@@ -83,31 +83,30 @@ export default function StorePage() {
         purchaseData.recipientEmail = recipientEmail;
     }
     
-    addDocumentNonBlocking(collection(firestore, purchasesCollectionPath), purchaseData)
-    .then((docRef) => {
-        const successMessageBody = isGift 
-          ? `<strong>رقم الطلب: ${docRef.id}</strong><br/><br/>
-             شكراً لك على كرمك! لقد تم تسجيل طلبك لإهداء <strong>"${productName}"</strong> إلى ${recipientEmail}.<br/><br/>
-             سيتم التواصل معك عبر بريدك لإتمام الدفع، وبعدها سنقوم بإرسال الهدية بالنيابة عنك.`
-          : `<strong>رقم الطلب: ${docRef.id}</strong><br/><br/>
-             مرحباً بك في خطوتك الأولى نحو الإتقان! لقد قمنا بتسجيل طلبك لشراء <strong>"${productName}"</strong> وهو الآن قيد المراجعة.<br/><br/>
-             <strong>الخطوة التالية:</strong> لإتمام عملية الشراء، سيقوم فريق الإدارة لدينا بالتواصل معك عبر البريد الإلكتروني المسجل لدينا خلال الساعات القادمة لتزويدك برابط دفع آمن ومباشر.`;
+    // Non-blocking write to Firestore
+    addDocumentNonBlocking(collection(firestore, purchasesCollectionPath), purchaseData);
 
-        setPaymentMessage({
-            type: 'success',
-            title: '✅ تم استلام طلبك بنجاح!',
-            body: successMessageBody,
-        });
+    // Display optimistic success message immediately
+    const successMessageBody = isGift 
+      ? `<strong>تم تسجيل طلبك بنجاح!</strong><br/><br/>
+         شكراً لك على كرمك! طلبك لإهداء <strong>"${productName}"</strong> إلى ${recipientEmail} قيد المراجعة.<br/><br/>
+         سيتم التواصل معك عبر بريدك لإتمام الدفع، وبعدها سنقوم بإرسال الهدية بالنيابة عنك.`
+      : `<strong>تم تسجيل طلبك بنجاح!</strong><br/><br/>
+         مرحباً بك في خطوتك الأولى نحو الإتقان! طلبك لشراء <strong>"${productName}"</strong> هو الآن قيد المراجعة.<br/><br/>
+         <strong>الخطوة التالية:</strong> لإتمام عملية الشراء، سيقوم فريق الإدارة لدينا بالتواصل معك عبر البريد الإلكتروني المسجل لدينا خلال الساعات القادمة لتزويدك برابط دفع آمن ومباشر.`;
 
-        if (isGift) setGiftEmail('');
-    })
-    .catch((error) => {
-        console.error("Error creating purchase request:", error);
-        setPaymentMessage({ type: 'error', title: 'حدث خطأ', body: 'لم نتمكن من تسجيل طلبك. قد تكون هناك مشكلة في الصلاحيات. يرجى المحاولة مرة أخرى.' });
-    })
-    .finally(() => {
-        setIsSubmitting(false);
+    setPaymentMessage({
+        type: 'success',
+        title: '✅ تم استلام طلبك بنجاح!',
+        body: successMessageBody,
     });
+    toast({
+        title: "تم تسجيل طلبك بنجاح!",
+        description: "سيتم التواصل معك قريباً لتأكيد الدفع.",
+    });
+
+    if (isGift) setGiftEmail('');
+    setIsSubmitting(false);
   };
 
   const getStatusChip = (status: Purchase['status']) => {
@@ -274,5 +273,3 @@ style.innerHTML = `
 }
 `;
 document.head.appendChild(style);
-
-    

@@ -118,6 +118,13 @@ const GameContent = () => {
     } else {
       setIsCorrect(false);
       setMessage('حاول مجدداً! ترتيب الكلمات غير صحيح.');
+      // Reset the words for another try
+      setTimeout(() => {
+        setShuffledWords(shuffleWords(correctSentence));
+        setArrangedWords([]);
+        setIsCorrect(null);
+        setMessage('');
+      }, 2000);
     }
   }, [arrangedWords, correctSentence, alias, user, firestore]);
 
@@ -296,5 +303,3 @@ const WordScramblePage = () => {
 };
 
 export default WordScramblePage;
-
-    
