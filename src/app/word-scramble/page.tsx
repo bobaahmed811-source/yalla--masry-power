@@ -332,7 +332,8 @@ const DraggableWord = ({ id, word, index, source, moveWord, isLocked } : { id: a
     );
 };
 
-const WordScramblePage = () => {
+// Main page component that wraps everything with the DND provider
+const WordScramblePageWrapper = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="min-h-screen bg-[#0d284e] p-4 md:p-8 flex items-center justify-center">
@@ -342,4 +343,6 @@ const WordScramblePage = () => {
   );
 };
 
-export default WordScramblePage;
+export default WordScramblePageWrapper;
+
+    
