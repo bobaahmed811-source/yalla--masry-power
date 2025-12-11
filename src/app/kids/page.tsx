@@ -18,7 +18,7 @@ interface Instructor {
 const TeacherCard = ({ teacher }: { teacher: Instructor }) => (
   <div className="dashboard-card text-white p-6 rounded-2xl shadow-lg text-center transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-gold-accent flex flex-col">
     <div className="relative w-32 h-32 mx-auto mb-4">
-      <img src={teacher.photo || `https://picsum.photos/seed/${teacher.id}/200/200`} alt={`صورة ${teacher.teacherName}`} className="rounded-full w-full h-full object-cover border-4 border-gold-accent" />
+      <img src={teacher.photo || `https://picsum.photos/seed/${teacher.id}/200/200`} alt={`صورة ${teacher.teacherName}`} className="rounded-full w-full h-full object-cover border-4 border-gold-accent" data-ai-hint="teacher portrait" />
       <span 
         className={`absolute bottom-1 right-1 block h-5 w-5 rounded-full border-2 border-nile-dark ${teacher.status === 'Active' ? 'bg-green-400' : 'bg-gray-500'}`}
         title={teacher.status === 'Active' ? 'متاح' : 'غير متاح'}
@@ -40,25 +40,28 @@ const ChallengeLink = ({
   title,
   description,
   icon,
+  bgColor,
 }: {
   href: string;
   title:string;
   description: string;
   icon: React.ReactNode;
+  bgColor: string;
 }) => (
   <Link
     href={href}
-    className="challenge-item group block p-6 rounded-lg transition-all duration-300"
+    className="challenge-item group block p-6 rounded-2xl transition-all duration-300 transform hover:scale-105"
+    style={{ background: bgColor }}
   >
-    <div className="flex items-center gap-4">
-      <div className="icon-symbol text-4xl text-gold-accent w-10 flex justify-center">{icon}</div>
-      <div>
-        <h3 className="font-bold text-2xl text-white group-hover:text-gold-accent transition-colors">
+    <div className="flex flex-col items-center text-center">
+        <div className="text-6xl text-white mb-4">{icon}</div>
+        <h3 className="font-black text-3xl text-white">
           {title}
         </h3>
-        <p className="text-md text-sand-ochre">{description}</p>
-      </div>
-      <ArrowRight className="mr-auto h-6 w-6 text-sand-ochre group-hover:translate-x-1 transition-transform" />
+        <p className="text-md text-white/80 mt-2">{description}</p>
+        <div className="mt-4 bg-white/20 text-white font-bold py-2 px-4 rounded-full group-hover:bg-white group-hover:text-black transition-colors">
+            إبدأ اللعب <ArrowRight className="inline-block h-5 w-5" />
+        </div>
     </div>
   </Link>
 );
@@ -97,19 +100,21 @@ export default function KidsCornerPage() {
 
         {/* Fun Challenges Section */}
         <section>
-             <h2 className="text-4xl font-bold royal-title text-gold-accent mb-6 border-r-4 border-sand-ochre pr-4">تحديات وألعاب</h2>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <h2 className="text-4xl font-bold royal-title text-gold-accent mb-6 border-r-4 border-sand-ochre pr-4">مغامرات فرعونية صغيرة</h2>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <ChallengeLink
-                    href="/comic-studio"
-                    title="استوديو القصص المصورة"
-                    description="اصنع قصصاً ملونة بصوتك."
+                    href="/comic-studio?mode=kids"
+                    title="مغامرة الدبلجة"
+                    description="اصنع قصصاً ملونة بصوتك مع شخصيات كرتونية!"
                     icon={<Palette />}
+                    bgColor="linear-gradient(135deg, #f87171, #ef4444)"
                 />
                 <ChallengeLink
-                    href="/word-scramble"
-                    title="ألغاز الكلمات"
-                    description="رتب الكلمات لتصنع جملاً مفيدة."
+                    href="/word-scramble?mode=kids"
+                    title="لعبة الكلمات السحرية"
+                    description="رتّب الكلمات لتكشف الجملة السرية."
                     icon={<Shuffle />}
+                    bgColor="linear-gradient(135deg, #60a5fa, #3b82f6)"
                 />
              </div>
         </section>
@@ -125,16 +130,14 @@ export default function KidsCornerPage() {
                 )}
             {error && <p className="text-center text-lg text-red-400">حدث خطأ أثناء تحميل المعلمين: {error.message}</p>}
             
-            {teachers && (
+            {teachers && teachers.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {teachers.map(teacher => (
                 <TeacherCard key={teacher.id} teacher={teacher} />
                 ))}
             </div>
-            )}
-
-            {!isLoading && teachers?.length === 0 && (
-                <p className="text-center text-sand-ochre py-10">لا يوجد معلمون متخصصون في تعليم الأطفال مسجلون حالياً.</p>
+            ) : !isLoading && (
+                 <p className="text-center text-sand-ochre py-10">لا يوجد معلمون متخصصون في تعليم الأطفال مسجلون حالياً.</p>
             )}
         </section>
       </main>
@@ -149,5 +152,3 @@ export default function KidsCornerPage() {
     </div>
   );
 }
-
-    

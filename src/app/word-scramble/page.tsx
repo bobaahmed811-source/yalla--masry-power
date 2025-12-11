@@ -1,7 +1,7 @@
-
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useDrag, useDrop, DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Link from 'next/link';
@@ -39,6 +39,9 @@ const ItemTypes = { WORD: 'word' };
 // ===================================
 const GameContent = () => {
   const { user, isUserLoading, firestore } = useUser(true);
+  const searchParams = useSearchParams();
+  const isKidsMode = searchParams.get('mode') === 'kids';
+
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
   const [shuffledWords, setShuffledWords] = useState<string[]>([]);
   const [arrangedWords, setArrangedWords] = useState<string[]>([]);
@@ -51,15 +54,19 @@ const GameContent = () => {
 
   const userGoal = user?.goal; // e.g., 'social', 'business', 'travel', 'academic'
   
-  // Memoize the filtered puzzles based on user goal
+  // Memoize the filtered puzzles based on user goal or kids mode
   const puzzles = useMemo(() => {
     if (!allPuzzles) return [];
+    if (isKidsMode) {
+        // For kids, use simple, everyday phrases.
+        return allPuzzles.filter(p => p.category === 'تعبيرات يومية' || p.category === 'التحيات والمجاملات');
+    }
     if (!userGoal || userGoal === 'social') return allPuzzles; // Default to all if no goal or social
 
     const goalCategoryMap: Record<string, string[]> = {
         business: ['الأعمال', 'رسمي'],
         travel: ['في السوق', 'في المطار', 'في الفندق'],
-        academic: ['أكاديمي', 'فصحى'],
+        academic: ['أكاديمي'],
     };
 
     const relevantCategories = goalCategoryMap[userGoal] || [];
@@ -68,7 +75,7 @@ const GameContent = () => {
     // If no puzzles match the specific goal, fall back to general categories
     return filtered.length > 0 ? filtered : allPuzzles.filter(p => p.category === 'تعبيرات يومية' || p.category === 'التحيات والمجاملات');
 
-  }, [allPuzzles, userGoal]);
+  }, [allPuzzles, userGoal, isKidsMode]);
 
 
   const alias = user?.displayName || 'تحتمس الصغير';
@@ -236,6 +243,9 @@ const GameContent = () => {
 
   const isChallengeFinished = isCorrect && puzzles && currentPuzzleIndex === puzzles.length -1;
 
+  const backLink = isKidsMode ? "/kids" : "/";
+  const backLinkText = isKidsMode ? "العودة لركن الأطفال" : "العودة للوحة التحكم";
+
   return (
     <div className="w-full max-w-3xl bg-[#0d284e] rounded-xl shadow-2xl dashboard-card" style={{ direction: 'rtl' }}>
 
@@ -279,8 +289,8 @@ const GameContent = () => {
               <Check className="ml-2 h-5 w-5" /> تحقق من الإجابة
             </Button>
           )}
-          <Link href="/" className="w-full sm:w-auto">
-            <Button variant="outline" className="utility-button w-full">العودة للوحة التحكم</Button>
+          <Link href={backLink} className="w-full sm:w-auto">
+            <Button variant="outline" className="utility-button w-full">{backLinkText}</Button>
           </Link>
         </div>
 
@@ -344,5 +354,3 @@ const WordScramblePageWrapper = () => {
 };
 
 export default WordScramblePageWrapper;
-
-    

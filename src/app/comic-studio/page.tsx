@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -19,6 +20,7 @@ import {
   Mic,
   StopCircle,
   Save,
+  Baby,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -59,8 +61,24 @@ const StatusDisplay = ({
 };
 
 export default function ComicStudioPage() {
-  const [scene, setScene] = useState('family');
-  const [dialogue, setDialogue] = useState<string[]>(['مرحباً!', 'كيف حالك اليوم؟', 'أنا بخير، شكراً لك!']);
+  const searchParams = useSearchParams();
+  const isKidsMode = searchParams.get('mode') === 'kids';
+
+  const defaultScene = isKidsMode ? 'zoo' : 'family';
+  const scenes = isKidsMode 
+    ? [
+        { value: 'zoo', label: '1. حديقة الحيوان' },
+        { value: 'playground', label: '2. الملعب' },
+        { value: 'birthday', label: '3. حفلة عيد ميلاد' },
+      ]
+    : [
+        { value: 'market', label: '1. السوق الشعبي' },
+        { value: 'school', label: '2. فناء المدرسة' },
+        { value: 'family', label: '3. العشاء العائلي' },
+      ];
+
+  const [scene, setScene] = useState(defaultScene);
+  const [dialogue, setDialogue] = useState<string[]>(isKidsMode ? ['يا سلام! الأسد كبير أوي.', 'والزرافة طويلة خالص!', 'أنا بحب حديقة الحيوان.'] : ['مرحباً!', 'كيف حالك اليوم؟', 'أنا بخير، شكراً لك!']);
   const [status, setStatus] = useState<{ type: StatusType; message: string }>({
     type: 'info',
     message: 'جاهز لتوليد الحوار.',
@@ -208,9 +226,11 @@ export default function ComicStudioPage() {
     <div className="min-h-screen bg-[#e0f2f1] p-4 sm:p-6 lg:p-8" style={{direction: 'rtl'}}>
       <header className="comic-bg shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <h1 className="text-3xl font-extrabold text-white tracking-tight">استوديو القصص المصورة</h1>
-            <Link href="/" className="text-sm font-semibold text-white hover:text-gray-200 transition">
-                 العودة للوحة التحكم
+            <h1 className="text-3xl font-extrabold text-white tracking-tight">
+              {isKidsMode ? 'مغامرة الدبلجة' : 'استوديو القصص المصورة'}
+            </h1>
+            <Link href={isKidsMode ? "/kids" : "/"} className="text-sm font-semibold text-white hover:text-gray-200 transition">
+                 {isKidsMode ? 'العودة لركن الأطفال' : 'العودة للوحة التحكم'}
             </Link>
         </div>
       </header>
@@ -228,9 +248,9 @@ export default function ComicStudioPage() {
                                 <SelectValue placeholder="اختر مشهدًا" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="market">1. السوق الشعبي</SelectItem>
-                                <SelectItem value="school">2. فناء المدرسة</SelectItem>
-                                <SelectItem value="family">3. العشاء العائلي</SelectItem>
+                                {scenes.map(s => (
+                                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
@@ -249,7 +269,7 @@ export default function ComicStudioPage() {
                     <div key={panelNum} className="comic-panel">
                          <div className="absolute top-2 right-2 bg-black text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">{panelNum}</div>
                          <div className="flex-grow flex items-center justify-center">
-                            <Image src={`https://picsum.photos/seed/${scene}${panelNum}/400/400`} alt={`Scene panel ${panelNum}`} width={200} height={200} className="rounded-lg object-cover" />
+                            <Image src={`https://picsum.photos/seed/${scene}${panelNum}/400/400`} alt={`Scene panel ${panelNum}`} width={200} height={200} className="rounded-lg object-cover" data-ai-hint="comic scene" />
                         </div>
                          <div className="speech-bubble">
                             <p className="text-center font-semibold">
