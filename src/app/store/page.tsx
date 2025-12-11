@@ -6,7 +6,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection, query, where } from 'firebase/firestore';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gift, PiggyBank, ShoppingCart, History, ArrowLeft, Loader2, Ankh, ScrollText, Lock } from 'lucide-react';
+import { Gift, PiggyBank, ShoppingCart, History, ArrowLeft, Loader2, Ankh, ScrollText, Lock, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +38,7 @@ export default function StorePage() {
   const [giftEmail, setGiftEmail] = useState('');
   const [giftProduct, setGiftProduct] = useState('wisdom_papyrus');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState('treasures');
 
   const appId = 'yalla-masry-academy'; // This ID would typically come from your environment configuration
 
@@ -121,6 +122,11 @@ export default function StorePage() {
     const productName = giftProduct === 'wisdom_papyrus' ? 'بردية حكمة بتاح حتب' : 'مفتاح الحياة الصوتي';
     buyProduct(productName, productPrice, true, giftEmail);
   }
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setPaymentMessage(null); // Clear message when switching tabs
+  }
   
   if (isUserLoading) {
       return (
@@ -145,12 +151,17 @@ export default function StorePage() {
       <main className="max-w-6xl mx-auto">
          {paymentMessage && (
             <div className={`p-6 rounded-xl mb-8 shadow-lg transition-all duration-300 ${paymentMessage.type === 'success' ? 'bg-green-800/20 border-green-500' : paymentMessage.type === 'error' ? 'bg-red-800/20 border-red-500' : 'bg-blue-800/20 border-blue-500'} border`}>
-              <p className={`font-extrabold text-2xl mb-3 ${paymentMessage.type === 'success' ? 'text-green-300' : paymentMessage.type === 'error' ? 'text-red-300' : 'text-blue-300'}`}>{paymentMessage.title}</p>
-              <div className={`text-md ${paymentMessage.type === 'success' ? 'text-green-200' : paymentMessage.type === 'error' ? 'text-red-200' : 'text-blue-200'} space-y-2`} dangerouslySetInnerHTML={{ __html: paymentMessage.body }}></div>
+                <div className="flex items-center gap-4">
+                    <CheckCircle className="w-10 h-10 text-green-400" />
+                    <div>
+                        <p className={`font-extrabold text-2xl mb-1 ${paymentMessage.type === 'success' ? 'text-green-300' : paymentMessage.type === 'error' ? 'text-red-300' : 'text-blue-300'}`}>{paymentMessage.title}</p>
+                        <div className={`text-md ${paymentMessage.type === 'success' ? 'text-green-200' : paymentMessage.type === 'error' ? 'text-red-200' : 'text-blue-200'} space-y-2`} dangerouslySetInnerHTML={{ __html: paymentMessage.body }}></div>
+                    </div>
+                </div>
             </div>
           )}
 
-          <Tabs defaultValue="treasures" className="w-full">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-3 bg-nile/50 p-2 rounded-xl border border-sand-ochre/30">
               <TabsTrigger value="treasures" className="tab-trigger"><ShoppingCart className="w-5 h-5 ml-2"/> كنوز المملكة</TabsTrigger>
               <TabsTrigger value="gifts" className="tab-trigger"><Gift className="w-5 h-5 ml-2"/> إرسال هدية</TabsTrigger>
@@ -277,6 +288,3 @@ style.innerHTML = `
 }
 `;
 document.head.appendChild(style);
-
-    
-    

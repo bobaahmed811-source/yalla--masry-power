@@ -67,14 +67,19 @@ const GameContent = () => {
     }
   }, [user]);
   
-  useEffect(() => {
+  const resetPuzzle = useCallback(() => {
     if (currentPuzzle) {
-      setShuffledWords(shuffleWords(currentPuzzle.sentence));
-      setArrangedWords([]);
-      setIsCorrect(null);
-      setMessage('');
+        setShuffledWords(shuffleWords(currentPuzzle.sentence));
+        setArrangedWords([]);
+        setIsCorrect(null);
+        setMessage('');
     }
-  }, [currentPuzzleIndex, currentPuzzle]);
+  }, [currentPuzzle]);
+
+  useEffect(() => {
+    resetPuzzle();
+  }, [currentPuzzleIndex, resetPuzzle]);
+
 
   const moveWordInArrangeArea = useCallback(
     (dragIndex: number, hoverIndex: number) => {
@@ -121,13 +126,13 @@ const GameContent = () => {
       setMessage('حاول مجدداً! ترتيب الكلمات غير صحيح.');
       // Reset the words for another try after a delay
       setTimeout(() => {
-        setShuffledWords(prevShuffled => [...prevShuffled, ...arrangedWords]);
         setArrangedWords([]);
+        setShuffledWords(shuffleWords(currentPuzzle.sentence));
         setIsCorrect(null);
         setMessage('');
       }, 2000);
     }
-  }, [arrangedWords, correctSentence, alias, user, firestore]);
+  }, [arrangedWords, correctSentence, alias, user, firestore, currentPuzzle]);
 
   const nextPuzzle = useCallback(() => {
     const nextIndex = currentPuzzleIndex + 1;

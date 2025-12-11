@@ -120,16 +120,12 @@ export default function BookingPage() {
         isGift: false,
     };
 
-    try {
-        await addDocumentNonBlocking(collection(firestore, purchasesCollectionPath), purchaseData);
-        setBookingStatus('confirmed');
-    } catch(error) {
-        console.error("Booking error: ", error);
-        toast({ variant: 'destructive', title: 'خطأ في الحجز', description: 'لم نتمكن من تسجيل طلب الحجز. يرجى المحاولة مرة أخرى.' });
-        setBookingStatus('idle'); // Go back to selection on error
-    } finally {
-        setIsSubmitting(false);
-    }
+    // Non-blocking write
+    addDocumentNonBlocking(collection(firestore, purchasesCollectionPath), purchaseData);
+
+    // Optimistic UI update
+    setBookingStatus('confirmed');
+    setIsSubmitting(false);
   };
   
   const resetBooking = () => {
