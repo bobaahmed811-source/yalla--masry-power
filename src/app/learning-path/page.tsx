@@ -29,18 +29,22 @@ interface Progress {
   currentLessonId: string;
 }
 
-const getStatusForLesson = (lessonId: string, progress: Progress | undefined) => {
-  if (!progress) return 'locked';
-  if (progress.completedLessons.includes(lessonId)) {
-    return 'completed';
-  }
-  if (progress.currentLessonId === lessonId) {
-    return 'current';
-  }
-  // If the lesson is after the current one, it's locked.
-  // This simple logic assumes linear progression.
-  const isFutureLesson = !progress.completedLessons.includes(lessonId) && lessonId !== progress.currentLessonId;
-  return isFutureLesson ? 'locked' : 'locked'; // Default to locked
+const getStatusForLesson = (lessonId: string, progress: Progress | undefined, allLessons: Lesson[] | undefined) => {
+    if (!progress || !allLessons) return 'locked';
+    if (progress.completedLessons.includes(lessonId)) {
+        return 'completed';
+    }
+    if (progress.currentLessonId === lessonId) {
+        return 'current';
+    }
+    // Check if lesson is in the future based on order
+    const currentLessonInAll = allLessons.find(l => l.id === progress.currentLessonId);
+    const thisLesson = allLessons.find(l => l.id === lessonId);
+    if (currentLessonInAll && thisLesson && thisLesson.order > currentLessonInAll.order) {
+        return 'locked';
+    }
+    // Default to locked if logic doesn't match
+    return 'locked'; 
 };
 
 
@@ -67,12 +71,9 @@ const CourseSection = ({ course, progress }: { course: Course, progress: Progres
 
   const { data: lessons, isLoading: isLoadingLessons, error: lessonsError } = useCollection<Lesson>(lessonsQuery);
   
-  // This logic is a bit complex: We need to determine if a lesson is locked based on the order and progress.
-  const getIsLocked = (lessonOrder: number) => {
+  const getIsLocked = (lessonId: string, status: string) => {
       if(!progress) return true;
-      const currentLesson = lessons?.find(l => l.id === progress.currentLessonId);
-      if(!currentLesson) return true;
-      return lessonOrder > currentLesson.order;
+      return status === 'locked';
   };
 
   return (
@@ -87,8 +88,8 @@ const CourseSection = ({ course, progress }: { course: Course, progress: Progres
 
       <div className="space-y-4">
         {lessons && lessons.map((lesson) => {
-          const isLocked = getIsLocked(lesson.order);
-          const status = progress?.completedLessons.includes(lesson.id) ? 'completed' : (progress?.currentLessonId === lesson.id ? 'current' : 'locked');
+          const status = getStatusForLesson(lesson.id, progress, lessons);
+          const isLocked = getIsLocked(lesson.id, status);
           
           return (
             <Link
