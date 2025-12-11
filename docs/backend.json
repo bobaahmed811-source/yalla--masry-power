@@ -40,6 +40,13 @@
         "level": {
             "type": "string",
             "description": "The self-assessed skill level of the user (e.g., 'beginner', 'intermediate')."
+        },
+        "badges": {
+          "type": "array",
+          "description": "A list of badge names the user has earned.",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -652,6 +659,20 @@
             "translation": { "type": "string", "description": "The English translation of the phrase." }
         },
         "required": ["id", "category", "text", "translation"]
+    },
+    "GulfPhrase": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Gulf Phrase",
+        "type": "object",
+        "description": "Represents a phrase in a Gulf dialect with its Egyptian Arabic equivalent.",
+        "properties": {
+            "id": { "type": "string", "description": "Unique identifier for the Gulf Phrase." },
+            "gulf_phrase": { "type": "string", "description": "The phrase in the Gulf dialect." },
+            "egyptian_phrase": { "type": "string", "description": "The equivalent phrase in Egyptian Colloquial Arabic." },
+            "explanation": { "type": "string", "description": "An optional explanation of the nuance or usage difference." },
+            "category": { "type": "string", "description": "The category of the phrase (e.g., 'Greetings', 'Food')." }
+        },
+        "required": ["id", "gulf_phrase", "egyptian_phrase", "category"]
     }
   },
   "auth": {
@@ -733,10 +754,16 @@
       {
         "path": "/phrases/{phraseId}",
         "definition": { "schema": { "$ref": "#/backend/entities/Phrase" } }
+      },
+      {
+        "path": "/gulf_phrases/{phraseId}",
+        "definition": { "schema": { "$ref": "#/backend/entities/GulfPhrase" } }
       }
     ],
-    "reasoning": "This Firestore structure prioritizes security and scalability for the EdTech platform, focusing on authorization independence and clear access patterns. It leverages path-based ownership for user-specific data and membership maps for collaborative data access, eliminating the need for `get()` calls in security rules and ensuring atomic operations.\n\nThe core principle is **Authorization Independence**. For the `/artifacts/{appId}/public/data/digital_purchases` collection, even though the data is 'public', security is maintained because each document contains the `userId`. Rules are structured to ensure only the authenticated user can create a purchase request for themselves. The `appId` parameter in the path allows for segregation and management of data within specific application contexts, which is useful for multi-tenant environments or different versions of the EdTech platform.\n\n**QAPs (Rules are not Filters):**\n*   The structure supports secure `list` operations by segregating data into collections with homogeneous security postures. For example, purchase requests are stored in a dedicated collection `/artifacts/{appId}/public/data/digital_purchases`, where access is controlled based on the `userId` within each document, allowing for listing purchases securely.\n\n**Denormalization**: The `userId` is denormalized into the `/artifacts/{appId}/public/data/digital_purchases` collection and a `productName` field has been added to prevent extra reads. A new `/instructors/{instructorId}/reviews/{reviewId}` path is added for storing student reviews. This is publicly readable but writing is restricted to authenticated users to prevent spam. A new collection for `instructors` has been added to support the admin dashboard functionality, with rules initially allowing any signed-in user to manage them for ease of prototyping.\n\nA new `community_messages` collection is added for the public chat feature. Security rules are configured to allow any authenticated user to read from and write to this collection, fostering an open communication environment for students. Updates and deletes are disallowed to maintain the integrity of the chat history. A new path for `comic_performances` is added under `/artifacts/{appId}/users/{userId}` to store user-generated content securely with path-based ownership. New publicly readable collections for `products`, `books`, and `hadiths` have been added to support the admin dashboard and dynamic content management. A new `phrases` collection is added to store phrases for challenges and the audio library, making the content dynamic and manageable through the admin dashboard."
+    "reasoning": "This Firestore structure prioritizes security and scalability for the EdTech platform, focusing on authorization independence and clear access patterns. It leverages path-based ownership for user-specific data and membership maps for collaborative data access, eliminating the need for `get()` calls in security rules and ensuring atomic operations.\n\nThe core principle is **Authorization Independence**. For the `/artifacts/{appId}/public/data/digital_purchases` collection, even though the data is 'public', security is maintained because each document contains the `userId`. Rules are structured to ensure only the authenticated user can create a purchase request for themselves. The `appId` parameter in the path allows for segregation and management of data within specific application contexts, which is useful for multi-tenant environments or different versions of the EdTech platform.\n\n**QAPs (Rules are not Filters):**\n*   The structure supports secure `list` operations by segregating data into collections with homogeneous security postures. For example, purchase requests are stored in a dedicated collection `/artifacts/{appId}/public/data/digital_purchases`, where access is controlled based on the `userId` within each document, allowing for listing purchases securely.\n\n**Denormalization**: The `userId` is denormalized into the `/artifacts/{appId}/public/data/digital_purchases` collection and a `productName` field has been added to prevent extra reads. A new `/instructors/{instructorId}/reviews/{reviewId}` path is added for storing student reviews. This is publicly readable but writing is restricted to authenticated users to prevent spam. A new collection for `instructors` has been added to support the admin dashboard functionality, with rules initially allowing any signed-in user to manage them for ease of prototyping.\n\nA new `community_messages` collection is added for the public chat feature. Security rules are configured to allow any authenticated user to read from and write to this collection, fostering an open communication environment for students. Updates and deletes are disallowed to maintain the integrity of the chat history. A new path for `comic_performances` is added under `/artifacts/{appId}/users/{userId}` to store user-generated content securely with path-based ownership. New publicly readable collections for `products`, `books`, and `hadiths` have been added to support the admin dashboard and dynamic content management. A new `phrases` collection is added to store phrases for challenges and the audio library, making the content dynamic and manageable through the admin dashboard. A new `gulf_phrases` collection is added to support the Gulf Gateway feature, allowing for a publicly readable dictionary of dialect translations, while restricting write access to authenticated users for admin management."
   }
 }
+
+    
 
     

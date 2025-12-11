@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -71,6 +72,15 @@ interface Phrase {
     translation: string;
 }
 
+interface GulfPhrase {
+    id: string;
+    gulf_phrase: string;
+    egyptian_phrase: string;
+    explanation?: string;
+    category: string;
+}
+
+
 const phraseCategories = [
     "التحيات والمجاملات",
     "في السوق",
@@ -80,6 +90,14 @@ const phraseCategories = [
     "في الفندق",
     "أكاديمي",
     "رسمي",
+];
+
+const gulfPhraseCategories = [
+    "تحيات",
+    "طعام وشراب",
+    "في السوق",
+    "مصطلحات عامة",
+    "أرقام",
 ];
 
 
@@ -98,6 +116,7 @@ const AdminDashboardPage = () => {
       book: false,
       hadith: false,
       phrase: false,
+      gulfPhrase: false,
   });
   const [currentState, setCurrentState] = useState<any>({});
   const [selectedCourseForLessons, setSelectedCourseForLessons] = useState<Course | null>(null);
@@ -109,6 +128,7 @@ const AdminDashboardPage = () => {
   const booksCollection = useMemoFirebase(() => firestore ? collection(firestore, 'books') : null, [firestore]);
   const hadithsCollection = useMemoFirebase(() => firestore ? collection(firestore, 'hadiths') : null, [firestore]);
   const phrasesCollection = useMemoFirebase(() => firestore ? collection(firestore, 'phrases') : null, [firestore]);
+  const gulfPhrasesCollection = useMemoFirebase(() => firestore ? collection(firestore, 'gulf_phrases') : null, [firestore]);
   const lessonsCollection = useMemoFirebase(() => (firestore && selectedCourseForLessons) ? collection(firestore, `courses/${selectedCourseForLessons.id}/lessons`) : null, [firestore, selectedCourseForLessons]);
 
   // --- Data Hooks ---
@@ -118,6 +138,7 @@ const AdminDashboardPage = () => {
   const { data: books, isLoading: isLoadingBooks } = useCollection<Book>(booksCollection);
   const { data: hadiths, isLoading: isLoadingHadiths } = useCollection<Hadith>(hadithsCollection);
   const { data: phrases, isLoading: isLoadingPhrases } = useCollection<Phrase>(phrasesCollection);
+  const { data: gulfPhrases, isLoading: isLoadingGulfPhrases } = useCollection<GulfPhrase>(gulfPhrasesCollection);
   const { data: lessons, isLoading: isLoadingLessons } = useCollection<Lesson>(lessonsCollection);
 
   // --- Generic Handlers ---
@@ -180,6 +201,7 @@ const AdminDashboardPage = () => {
   const handleSaveBook = () => handleSave('books', currentState, ['title', 'author', 'category'], 'book');
   const handleSaveHadith = () => handleSave('hadiths', currentState, ['text', 'source', 'topic'], 'hadith');
   const handleSavePhrase = () => handleSave('phrases', currentState, ['category', 'text', 'translation'], 'phrase');
+  const handleSaveGulfPhrase = () => handleSave('gulf_phrases', currentState, ['gulf_phrase', 'egyptian_phrase', 'category'], 'gulfPhrase');
   const handleSaveLesson = () => {
       if (!selectedCourseForLessons) return;
       const data = { ...currentState, courseId: selectedCourseForLessons.id };
@@ -295,6 +317,26 @@ const AdminDashboardPage = () => {
                 <DialogFooter><DialogClose asChild><Button variant="outline" className="utility-button">إلغاء</Button></DialogClose><Button onClick={handleSavePhrase} disabled={isSubmitting} className="cta-button">{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'حفظ'}</Button></DialogFooter>
             </DialogContent>
         </Dialog>
+        
+        <Dialog open={dialogState.gulfPhrase} onOpenChange={(isOpen) => !isOpen && closeDialog('gulfPhrase')}>
+            <DialogContent className="dashboard-card text-white">
+                <DialogHeader><DialogTitle className="royal-title">{currentState.id ? 'تعديل عبارة خليجية' : 'إضافة عبارة خليجية'}</DialogTitle></DialogHeader>
+                <div className="grid gap-4 py-4" dir="rtl">
+                     <Select value={currentState.category || ''} onValueChange={(value) => handleSelectChange('category', value)}>
+                        <SelectTrigger className="w-full bg-nile-dark border-sand-ochre text-white">
+                            <SelectValue placeholder="اختر فئة العبارة..." />
+                        </SelectTrigger>
+                        <SelectContent className="dashboard-card text-white">
+                            {gulfPhraseCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    <Input name="gulf_phrase" placeholder="العبارة باللهجة الخليجية" value={currentState.gulf_phrase || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
+                    <Input name="egyptian_phrase" placeholder="المرادف باللهجة المصرية" value={currentState.egyptian_phrase || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
+                    <Textarea name="explanation" placeholder="شرح (اختياري)" value={currentState.explanation || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
+                </div>
+                <DialogFooter><DialogClose asChild><Button variant="outline" className="utility-button">إلغاء</Button></DialogClose><Button onClick={handleSaveGulfPhrase} disabled={isSubmitting} className="cta-button">{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'حفظ'}</Button></DialogFooter>
+            </DialogContent>
+        </Dialog>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {/* Instructors Card */}
@@ -331,6 +373,12 @@ const AdminDashboardPage = () => {
             <Card className="dashboard-card">
                 <CardHeader className="flex flex-row items-center justify-between"><CardTitle className="royal-title text-2xl">إدارة العبارات (للتحديات)</CardTitle><Button onClick={() => openDialog('phrase')} className="cta-button"><PlusCircle className="ml-2 h-4 w-4" /> إضافة</Button></CardHeader>
                 <CardContent>{isLoadingPhrases ? <Loader2 className="animate-spin" /> : <div className="space-y-2">{phrases?.map(item => (<div key={item.id} className="flex items-center justify-between p-2 rounded-lg bg-nile"><div><p className="font-bold truncate max-w-xs">{item.text}</p><p className="text-xs text-sand-ochre">{item.category}</p></div><div className="flex gap-1"><Button variant="ghost" size="icon" onClick={() => openDialog('phrase', item)}><Edit/></Button><AlertDialog><AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-red-500"><Trash2/></Button></AlertDialogTrigger><AlertDialogContent className="dashboard-card text-white"><AlertDialogHeader><AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="utility-button">إلغاء</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete('phrases', item.id)} className="bg-red-600">حذف</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div></div>))}</div>}</CardContent>
+            </Card>
+            
+            {/* Gulf Phrases Card */}
+            <Card className="dashboard-card xl:col-span-3">
+                <CardHeader className="flex flex-row items-center justify-between"><CardTitle className="royal-title text-2xl">إدارة قاموس الخليج</CardTitle><Button onClick={() => openDialog('gulfPhrase')} className="cta-button"><PlusCircle className="ml-2 h-4 w-4" /> إضافة عبارة</Button></CardHeader>
+                <CardContent>{isLoadingGulfPhrases ? <Loader2 className="animate-spin" /> : <div className="space-y-2">{gulfPhrases?.map(item => (<div key={item.id} className="flex items-center justify-between p-2 rounded-lg bg-nile"><div><p className="font-bold truncate max-w-xs">{item.gulf_phrase} &larr; {item.egyptian_phrase}</p><p className="text-xs text-sand-ochre">{item.category}</p></div><div className="flex gap-1"><Button variant="ghost" size="icon" onClick={() => openDialog('gulfPhrase', item)}><Edit/></Button><AlertDialog><AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-red-500"><Trash2/></Button></AlertDialogTrigger><AlertDialogContent className="dashboard-card text-white"><AlertDialogHeader><AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="utility-button">إلغاء</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete('gulf_phrases', item.id)} className="bg-red-600">حذف</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div></div>))}</div>}</CardContent>
             </Card>
 
             {/* Lessons Card */}
@@ -369,5 +417,7 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
+
+    
 
     
