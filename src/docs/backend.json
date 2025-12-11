@@ -36,6 +36,10 @@
         "goal": {
             "type": "string",
             "description": "The primary learning goal of the user (e.g., 'social', 'business')."
+        },
+        "level": {
+            "type": "string",
+            "description": "The self-assessed skill level of the user (e.g., 'beginner', 'intermediate')."
         }
       },
       "required": [
