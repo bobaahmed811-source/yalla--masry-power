@@ -40,6 +40,7 @@ import {
   Baby,
   BarChart3,
   Target,
+  MessagesSquare, // Import the chat icon
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
@@ -463,6 +464,24 @@ export default function HomePage() {
                       title="ركن الأطفال"
                       description="تحديات ومواد تعليمية للصغار."
                       icon={<Baby />}
+                    />
+                  </CardContent>
+                </Card>
+                <Card className="dashboard-card lg:col-span-2">
+                  <CardHeader>
+                    <CardTitle className="royal-title text-2xl">
+                        التواصل والتفاعل
+                    </CardTitle>
+                    <CardDescription className="text-sand-ochre">
+                      تواصلي مع باقي أعضاء المملكة.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ChallengeLink
+                      href="/community-chat"
+                      title="ساحة الحوار الكبرى"
+                      description="دردشة عامة مع جميع طلاب المملكة."
+                      icon={<MessagesSquare />}
                     />
                   </CardContent>
                 </Card>
