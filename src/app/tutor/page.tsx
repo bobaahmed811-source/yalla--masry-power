@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -27,7 +26,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, User, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
-import { getTutorResponse } from '../actions';
+import { getTutorResponse } from '../ai-actions';
 
 const formSchema = z.object({
   courseMaterial: z.string().min(10, {

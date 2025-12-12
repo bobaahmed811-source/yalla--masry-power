@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -176,13 +175,9 @@ const AdminDashboardPage = () => {
     
     setIsSubmitting(true);
     try {
-      if (data.id) {
-        await setDocumentNonBlocking(doc(firestore, collectionPath, data.id), data, { merge: true });
-        toast({ title: 'تم التحديث', description: 'تم تحديث البيانات بنجاح.' });
-      } else {
-        await addDocumentNonBlocking(collection(firestore, collectionPath), data);
-        toast({ title: 'تمت الإضافة', description: 'تمت إضافة البيانات بنجاح.' });
-      }
+      const docRef = data.id ? doc(firestore, collectionPath, data.id) : doc(collection(firestore, collectionPath));
+      await setDocumentNonBlocking(docRef, data, { merge: true });
+      toast({ title: data.id ? 'تم التحديث' : 'تمت الإضافة', description: 'تم تحديث البيانات بنجاح.' });
       closeDialog(type);
     } catch (error) { 
       console.error(error); 
@@ -210,17 +205,18 @@ const AdminDashboardPage = () => {
   const handleSaveInstructor = () => handleSave('instructors', currentState, ['teacherName', 'email', 'shortBio', 'lessonPrice'], 'instructor');
   const handleSaveCourse = () => handleSave('courses', currentState, ['title', 'description'], 'course');
   const handleSaveProduct = () => {
-    if (currentState.price === '' || currentState.price === undefined) {
-        delete currentState.price;
+    const dataToSave = { ...currentState };
+    if (dataToSave.price === '' || dataToSave.price === undefined) {
+        delete dataToSave.price;
     }
-    if (currentState.nilePointsPrice === '' || currentState.nilePointsPrice === undefined) {
-        delete currentState.nilePointsPrice;
+    if (dataToSave.nilePointsPrice === '' || dataToSave.nilePointsPrice === undefined) {
+        delete dataToSave.nilePointsPrice;
     }
-    if (!currentState.price && !currentState.nilePointsPrice) {
+    if (!dataToSave.price && !dataToSave.nilePointsPrice) {
         toast({ variant: 'destructive', title: 'خطأ', description: 'يجب تحديد سعر أو سعر بنقاط النيل على الأقل.' });
         return;
     }
-    handleSave('products', currentState, ['name', 'description', 'icon'], 'product');
+    handleSave('products', dataToSave, ['name', 'description', 'icon'], 'product');
   }
   const handleSaveBook = () => handleSave('books', currentState, ['title', 'author', 'category'], 'book');
   const handleSaveHadith = () => handleSave('hadiths', currentState, ['text', 'source', 'topic'], 'hadith');
@@ -442,5 +438,3 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
-
-    

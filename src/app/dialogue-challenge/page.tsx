@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { User, Store, Crown, Medal, Skull, Loader2, Lock, Gem } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getDialogueEvaluation } from './actions';
+import { getDialogueEvaluation } from '../ai-actions';
 import { doc, updateDoc, increment, arrayUnion } from 'firebase/firestore';
 import { Badge, getBadgeByName, type BadgeInfo } from '@/lib/badges';
 
@@ -155,70 +154,59 @@ export default function DialogueChallengePage() {
     setIsEvaluating(true);
     setFeedback(null);
     
-    // --- Optimistic UI and Fast-response AI ---
-    // 1. Update points immediately (optimistic update)
     const pointsToAward = choice.points || 0;
     setNilePoints(prev => prev + pointsToAward);
 
-    // 2. Update Firestore in the background (non-blocking)
-    const userRef = doc(firestore, 'users', user.uid);
-    updateDoc(userRef, {
-      nilePoints: increment(pointsToAward)
-    }).catch(error => {
-        // If firestore update fails, revert the local state and notify user
-        console.error("Failed to update points:", error);
-        setNilePoints(prev => prev - pointsToAward);
-        toast({ variant: 'destructive', title: 'خطأ', description: 'فشل تحديث نقاط النيل.' });
-    });
+    try {
+        const userRef = doc(firestore, 'users', user.uid);
+        await updateDoc(userRef, { nilePoints: increment(pointsToAward) });
 
-    // 3. Call AI for qualitative feedback in parallel
-    getDialogueEvaluation({ userAnswer: userText, choiceType: choice.type })
-      .then(result => {
-          setIsEvaluating(false);
-          if (result.success) {
-            const { feedback: feedbackMessage, isPositive } = result.success;
+        const result = await getDialogueEvaluation({ userAnswer: userText, choiceType: choice.type });
+
+        if (result.success && result.analysis) {
+            const { feedback: feedbackMessage, isPositive } = result.analysis;
             setFeedback({ message: feedbackMessage, score: pointsToAward, isPositive });
             
-            // 4. Proceed to next step after showing feedback
             setTimeout(() => {
-              setFeedback(null);
-              if (choice.type === 'wrong') {
-                  setDialogue(prev => prev.slice(0, -1)); // Go back one step
-              } else {
-                  const nextStep = storyScenario.find(s => s.id === choice.nextId);
-                  if (nextStep) {
-                      setDialogue(prev => [...prev, nextStep]);
-                      setCurrentStepId(choice.nextId);
-                  } else {
-                      setIsChallengeComplete(true);
-                      if (!userBadges.includes(Badge.MarketDialogue)) {
-                          const badgeInfo = getBadgeByName(Badge.MarketDialogue);
-                          setAwardedBadge(badgeInfo);
-                          setUserBadges(prev => [...prev, Badge.MarketDialogue]);
-                          updateDoc(userRef, {
-                              badges: arrayUnion(Badge.MarketDialogue)
-                          });
-                      }
-                  }
-              }
-            }, 4000); // Let user read feedback
-          } else {
-            // Handle AI evaluation error but still proceed
-            toast({
-                variant: 'destructive', title: 'خطأ في التقييم',
-                description: result.error || 'فشل الاتصال بالمعلم الذكي. سنكمل بدون تقييم.',
-            });
-            setIsEvaluating(false);
-            const nextStep = storyScenario.find(s => s.id === choice.nextId);
-            if (nextStep) {
-                 setDialogue(prev => [...prev, nextStep]);
-                 setCurrentStepId(choice.nextId);
-            } else {
-                 setIsChallengeComplete(true);
-            }
-          }
-      });
-  
+                setFeedback(null);
+                if (choice.type === 'wrong') {
+                    setDialogue(prev => prev.slice(0, -1)); 
+                } else {
+                    const nextStep = storyScenario.find(s => s.id === choice.nextId);
+                    if (nextStep) {
+                        setDialogue(prev => [...prev, nextStep]);
+                        setCurrentStepId(choice.nextId);
+                    } else {
+                        setIsChallengeComplete(true);
+                        if (!userBadges.includes(Badge.MarketDialogue)) {
+                            const badgeInfo = getBadgeByName(Badge.MarketDialogue);
+                            setAwardedBadge(badgeInfo);
+                            setUserBadges(prev => [...prev, Badge.MarketDialogue]);
+                            updateDoc(userRef, { badges: arrayUnion(Badge.MarketDialogue) });
+                        }
+                    }
+                }
+            }, 4000); 
+        } else {
+            throw new Error(result.error || 'Failed to get evaluation.');
+        }
+    } catch (error) {
+        console.error("Error during choice handling:", error);
+        setNilePoints(prev => prev - pointsToAward);
+        toast({
+            variant: 'destructive', title: 'خطأ في التقييم',
+            description: (error as Error).message,
+        });
+        const nextStep = storyScenario.find(s => s.id === choice.nextId);
+        if (nextStep) {
+             setDialogue(prev => [...prev, nextStep]);
+             setCurrentStepId(choice.nextId);
+        } else {
+             setIsChallengeComplete(true);
+        }
+    } finally {
+        setIsEvaluating(false);
+    }
   }, [alias, currentStepId, isEvaluating, isChallengeComplete, toast, user, firestore, userBadges]);
   
   
@@ -328,4 +316,3 @@ export default function DialogueChallengePage() {
     </div>
   );
 };
-    

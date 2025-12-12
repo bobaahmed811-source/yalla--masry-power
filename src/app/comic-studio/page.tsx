@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -28,7 +27,7 @@ import Link from 'next/link';
 import { useUser, useFirestore } from '@/firebase';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
-import { getComicDialog } from './actions';
+import { getComicDialog } from '../ai-actions';
 
 type StatusType = 'info' | 'loading' | 'success' | 'error';
 

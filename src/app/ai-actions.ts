@@ -4,6 +4,7 @@
  * @fileOverview Server actions for AI-related functionalities.
  */
 
+import { getTutorResponseFlow, AITutorInputSchema } from "@/ai/flows/tutor-flow";
 import { getSpeechAudioFlow } from '@/ai/flows/speech-flow';
 import { getComicDialogueFlow, ComicDialogueInputSchema } from '@/ai/flows/comic-dialogue-flow';
 import { getDialogueEvaluationFlow, DialogueEvaluationInputSchema } from '@/ai/flows/dialogue-evaluation-flow';
@@ -11,6 +12,21 @@ import { getStorytellerAudioFlow, StorytellerInputSchema } from '@/ai/flows/stor
 import { getPronunciationAnalysisFlow, PronunciationAnalysisInputSchema } from '@/ai/flows/pronunciation-analysis-flow';
 import { z } from 'zod';
 
+
+/**
+ * Server action to get a response from the AI Tutor.
+ * @param values The course material and user question.
+ * @returns A promise that resolves to the AI's answer or an error.
+ */
+export async function getTutorResponse(values: z.infer<typeof AITutorInputSchema>) {
+  try {
+    const result = await getTutorResponseFlow(values);
+    return { answer: result.answer };
+  } catch (e: any) {
+    console.error("Error in getTutorResponse action:", e);
+    return { error: "فشلت خدمة المعلم الذكي. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
+  }
+}
 
 /**
  * Server action to get audio for a given text string.
@@ -24,7 +40,7 @@ export async function getSpeechAudio(text: string) {
     return { success: true, media: result.media };
   } catch (e: any) {
     console.error("Error in getSpeechAudio action:", e);
-    return { error: "Failed to get audio from the AI. " + (e.message || "Please try again later.") };
+    return { error: "فشلت خدمة تحويل النص إلى صوت. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
   }
 }
 
@@ -41,7 +57,7 @@ export async function getComicDialog(values: z.infer<typeof ComicDialogueInputSc
     return { success: true, dialogue: result.dialogue };
   } catch (e: any) {
     console.error("Error in getComicDialog action:", e);
-    return { error: "Failed to get dialogue from the AI. " + (e.message || "Please try again later.") };
+    return { error: "فشلت خدمة توليد الحوار. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
   }
 }
 
@@ -54,11 +70,11 @@ export async function getComicDialog(values: z.infer<typeof ComicDialogueInputSc
 export async function getDialogueEvaluation(values: z.infer<typeof DialogueEvaluationInputSchema>) {
   try {
     const result = await getDialogueEvaluationFlow(values);
-    return { success: result };
+    return { success: true, analysis: result };
   } catch (e: any)
    {
     console.error("Error in getDialogueEvaluation action:", e);
-    return { error: "Failed to get evaluation from the AI. " + (e.message || "Please try again later.") };
+    return { error: "فشلت خدمة تقييم الحوار. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
   }
 }
 
@@ -73,7 +89,7 @@ export async function getStorytellerAudio(values: z.infer<typeof StorytellerInpu
         return { success: true, media: result.media };
     } catch (e: any) {
         console.error("Error in getStorytellerAudio action:", e);
-        return { error: "Failed to get story from the AI. " + (e.message || "Please try again later.") };
+        return { error: "فشلت خدمة المرشد الصوتي. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
     }
 }
 
@@ -88,6 +104,6 @@ export async function getPronunciationAnalysis(values: z.infer<typeof Pronunciat
         return { success: true, analysis: result };
     } catch (e: any) {
         console.error("Error in getPronunciationAnalysis action:", e);
-        return { error: "Failed to get analysis from the AI. " + (e.message || "Please try again later.") };
+        return { error: "فشلت خدمة تحليل النطق. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
     }
 }
