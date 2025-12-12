@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -228,10 +227,10 @@ export default function LandingPage() {
           <div className="max-w-4xl mx-auto px-4 text-center">
               <h2 className="text-3xl md:text-4xl font-bold royal-title mb-8">📞 تواصلي معنا</h2>
               <div className="space-y-4 text-lg text-sand-ochre">
-                  <p>📧 **البريد الإلكتروني:** info@talkmasry.com</p>
-                  <p>💬 **واتساب:** +20 XXX XXX XXXX</p>
-                  <p>📱 **انستجرام:** @talkmasryacademy</p>
-                  <p>🎥 **يوتيوب:** Talk Masry Academy</p>
+                  <p>📧 <strong>البريد الإلكتروني:</strong> your-email@yallamasry.com</p>
+                  <p>💬 <strong>واتساب:</strong> +20 123 456 7890</p>
+                  <p>📱 <strong>انستجرام:</strong> @YallaMasryAcademy</p>
+                  <p>🎥 <strong>يوتيوب:</strong> Yalla Masry Academy</p>
               </div>
               <div className="mt-10">
                   <p className="text-2xl font-bold text-white mb-4">✨ رحلتك لإتقان اللهجة المصرية تبدأ من هنا!</p>
@@ -247,4 +246,3 @@ export default function LandingPage() {
     </div>
   );
 }
-    
