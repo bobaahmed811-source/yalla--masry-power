@@ -1,108 +1,68 @@
-'use server';
-/**
- * @fileOverview Server actions for AI-related functionalities.
- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-import { getTutorResponseFlow, AITutorInputSchema } from "@/ai/flows/tutor-flow";
-import { getSpeechAudioFlow } from '@/ai/flows/speech-flow';
-import { getComicDialogueFlow, ComicDialogueInputSchema } from '@/ai/flows/comic-dialogue-flow';
-import { getDialogueEvaluationFlow, DialogueEvaluationInputSchema } from '@/ai/flows/dialogue-evaluation-flow';
-import { getStorytellerAudioFlow, StorytellerInputSchema } from '@/ai/flows/storyteller-flow';
-import { getPronunciationAnalysisFlow, PronunciationAnalysisInputSchema } from '@/ai/flows/pronunciation-analysis-flow';
-import { z } from 'zod';
-
-
-/**
- * Server action to get a response from the AI Tutor.
- * @param values The course material and user question.
- * @returns A promise that resolves to the AI's answer or an error.
- */
-export async function getTutorResponse(values: z.infer<typeof AITutorInputSchema>) {
-  try {
-    const result = await getTutorResponseFlow(values);
-    return { answer: result.answer };
-  } catch (e: any) {
-    console.error("Error in getTutorResponse action:", e);
-    return { error: "فشلت خدمة المعلم الذكي. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
   }
 }
 
-/**
- * Server action to get audio for a given text string.
- * It uses a Genkit flow to generate the audio.
- * @param text The text to convert to speech.
- * @returns A promise that resolves to the generated audio media or an error.
- */
-export async function getSpeechAudio(text: string) {
-  try {
-    const result = await getSpeechAudioFlow(text);
-    return { success: true, media: result.media };
-  } catch (e: any) {
-    console.error("Error in getSpeechAudio action:", e);
-    return { error: "فشلت خدمة تحويل النص إلى صوت. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 
-/**
- * Server action to get a comic dialogue from the AI.
- * It uses a Genkit flow to generate the dialogue based on a scene description.
- * @param values The scene identifier.
- * @returns A promise that resolves to the generated dialogue or an error.
- */
-export async function getComicDialog(values: z.infer<typeof ComicDialogueInputSchema>) {
-  try {
-    const result = await getComicDialogueFlow(values);
-    return { success: true, dialogue: result.dialogue };
-  } catch (e: any) {
-    console.error("Error in getComicDialog action:", e);
-    return { error: "فشلت خدمة توليد الحوار. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
-  }
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
 }
 
-
-/**
- * Server action to get an evaluation for a user's dialogue choice.
- * @param values The user's answer and the type of choice made.
- * @returns A promise that resolves to the AI's evaluation.
- */
-export async function getDialogueEvaluation(values: z.infer<typeof DialogueEvaluationInputSchema>) {
-  try {
-    const result = await getDialogueEvaluationFlow(values);
-    return { success: true, analysis: result };
-  } catch (e: any)
-   {
-    console.error("Error in getDialogueEvaluation action:", e);
-    return { error: "فشلت خدمة تقييم الحوار. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
-  }
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
 }
-
-/**
- * Server action to get a narrated story audio from the AI.
- * @param values The title and description of the artifact.
- * @returns A promise that resolves to the AI's generated audio.
- */
-export async function getStorytellerAudio(values: z.infer<typeof StorytellerInputSchema>) {
-    try {
-        const result = await getStorytellerAudioFlow(values);
-        return { success: true, media: result.media };
-    } catch (e: any) {
-        console.error("Error in getStorytellerAudio action:", e);
-        return { error: "فشلت خدمة المرشد الصوتي. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
-    }
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
 }
-
-/**
- * Server action to get a pronunciation analysis from the AI.
- * @param values The audio data URI and the original text.
- * @returns A promise that resolves to the AI's analysis.
- */
-export async function getPronunciationAnalysis(values: z.infer<typeof PronunciationAnalysisInputSchema>) {
-    try {
-        const result = await getPronunciationAnalysisFlow(values);
-        return { success: true, analysis: result };
-    } catch (e: any) {
-        console.error("Error in getPronunciationAnalysis action:", e);
-        return { error: "فشلت خدمة تحليل النطق. قد تكون خدمات Google AI غير مفعلة. " + (e.message || "الرجاء المحاولة لاحقًا.") };
-    }
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

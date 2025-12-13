@@ -1,56 +1,68 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
   }
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
+@layer base {
+  * {
+    @apply border-border;
   }
-)
-Button.displayName = "Button"
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-export { Button, buttonVariants }
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
+
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
+
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

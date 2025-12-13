@@ -1,79 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-'use server';
-/**
- * @fileOverview An AI flow for generating a short comic dialogue.
- *
- * This file defines the AI logic for a dialogue generation agent that creates
- * a simple, 3-line conversation in Egyptian Arabic based on a given scene.
- *
- * - ComicDialogueInputSchema: The Zod schema for the flow's input.
- * - ComicDialogueOutputSchema: The Zod schema for the flow's output.
- * - getComicDialogueFlow: The main server action that invokes the Genkit flow.
- */
-
-import { ai } from '@/ai/index';
-import { z } from 'zod';
-
-// Define the input schema for the comic dialogue flow.
-export const ComicDialogueInputSchema = z.object({
-  scene: z.string().describe("The scene for the dialogue (e.g., 'market', 'school')."),
-});
-export type ComicDialogueInput = z.infer<typeof ComicDialogueInputSchema>;
-
-// Define the output schema for the comic dialogue flow.
-export const ComicDialogueOutputSchema = z.object({
-  dialogue: z.array(z.string()).length(3).describe('A three-line dialogue in Egyptian Arabic.'),
-});
-export type ComicDialogueOutput = z.infer<typeof ComicDialogueOutputSchema>;
-
-/**
- * Defines a Genkit prompt for generating the comic dialogue.
- * The prompt instructs the AI to create a short, simple, and potentially funny
- * dialogue in Egyptian Arabic suitable for the provided scene.
- */
-const dialoguePrompt = ai.definePrompt({
-  name: 'comicDialoguePrompt',
-  input: { schema: ComicDialogueInputSchema },
-  output: { schema: ComicDialogueOutputSchema },
-  prompt: `You are a creative writer specializing in short, simple, and funny dialogues in Egyptian Arabic.
-Your task is to write a 3-line dialogue for a comic strip.
-The scene is: A "{{scene}}" in Egypt.
-
-- The dialogue must be exactly 3 lines long.
-- The language must be simple, modern Egyptian Colloquial Arabic.
-- The dialogue should be suitable for a beginner learner.
-- Make it a little bit humorous or charming if possible.
-
-Example for scene "market":
-- "بكام التفاح ده يا عمو؟"
-- "كيلو التفاح بعشرين جنيه يا ست الكل."
-- "غالي أوي! خلاص هاخد كيلو خيار."
-
-Your response must be in the specified JSON format, with the dialogue as an array of 3 strings.`,
-});
-
-/**
- * Defines the main Genkit flow for generating the comic dialogue.
- * This flow takes the scene, calls the prompt, and returns the generated dialogue.
- */
-const comicDialogueFlow = ai.defineFlow(
-  {
-    name: 'comicDialogueFlow',
-    inputSchema: ComicDialogueInputSchema,
-    outputSchema: ComicDialogueOutputSchema,
-  },
-  async (input) => {
-    const { output } = await dialoguePrompt(input);
-    return output!;
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
   }
-);
+}
 
-/**
- * The server action wrapper for the Genkit flow.
- * This function is called from the client-side to execute the dialogue generation.
- * @param input The scene for which to generate a dialogue.
- * @returns The AI-generated dialogue.
- */
-export async function getComicDialogueFlow(input: ComicDialogueInput): Promise<ComicDialogueOutput> {
-    return await comicDialogueFlow(input);
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
+
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
+
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

@@ -1,6 +1,3 @@
-put out Git Hub 
-# Firebase Studio
+# Yalla Masry Academy - Rebuilt
 
-This is a NextJS starter project in Firebase Studio. 
-
-To get started, take a look at src/app/page.tsx.
+This project has been rebuilt from scratch to ensure stability and a clean foundation for future development.

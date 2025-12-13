@@ -1,82 +1,68 @@
-'use client';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-import React from 'react';
-import Link from 'next/link';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
-import { ArrowRight, BookOpen, Loader2 } from 'lucide-react';
-
-interface Hadith {
-  id: string;
-  text: string;
-  source: string;
-  topic: string;
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
 }
 
-const HadithCard = ({ hadith }: { hadith: Hadith }) => (
-  <div className="dashboard-card text-white rounded-xl shadow-lg p-6 border-l-4 border-gold-accent transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-    <p className="text-lg md:text-xl font-serif mb-4 leading-relaxed text-sand-ochre">"{hadith.text}"</p>
-    <div className="flex justify-between items-center border-t border-sand-ochre/20 pt-4">
-        <span className="text-xs font-bold text-gold-accent bg-nile-dark/50 px-3 py-1 rounded-full">{hadith.topic}</span>
-        <span className="text-sm text-gray-400">{hadith.source}</span>
-    </div>
-  </div>
-);
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-export default function SunnahPage() {
-  const firestore = useFirestore();
-  const hadithsCollection = useMemoFirebase(() => {
-    return firestore ? collection(firestore, 'hadiths') : null;
-  }, [firestore]);
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 
-  const { data: hadiths, isLoading, error } = useCollection<Hadith>(hadithsCollection);
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
 
-  return (
-    <div 
-      className="min-h-screen p-4 md:p-8 flex flex-col bg-nile-dark"
-      style={{
-        direction: 'rtl',
-      }}
-    >
-      <header className="text-center my-12">
-        <div className="inline-block p-4 bg-nile rounded-full shadow-lg mb-4 border-2 border-gold-accent">
-          <BookOpen className="w-12 h-12 text-white" />
-        </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2 royal-title">
-          روضة السنة النبوية
-        </h1>
-        <p className="text-xl text-sand-ochre">
-          قطوف من كلام سيد المرسلين صلى الله عليه وسلم.
-        </p>
-      </header>
-
-      <main className="w-full max-w-4xl mx-auto flex-grow">
-        {isLoading && (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
-            <p className="text-center text-lg text-sand-ochre ml-4">جاري تحميل الأحاديث...</p>
-          </div>
-        )}
-        {error && <p className="text-center text-lg text-red-400">حدث خطأ أثناء تحميل الأحاديث: {error.message}</p>}
-        
-        {hadiths && hadiths.length > 0 ? (
-          <div className="space-y-6">
-            {hadiths.map(hadith => (
-              <HadithCard key={hadith.id} hadith={hadith} />
-            ))}
-          </div>
-        ) : !isLoading && (
-            <p className="text-center text-sand-ochre py-10">لا توجد أحاديث في الروضة حالياً.</p>
-        )}
-      </main>
-
-       <footer className="mt-auto pt-12 text-center text-gray-400 text-sm">
-         <Link href="/quran" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center mx-auto w-fit">
-            <ArrowRight className="ml-2 h-4 w-4" />
-            <span>العودة إلى واحة القرآن</span>
-        </Link>
-        <p className="mt-4">جميع الحقوق محفوظة لأكاديمية يلا مصري © 2024</p>
-      </footer>
-    </div>
-  );
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

@@ -1,93 +1,68 @@
-'use client';
-    
-import { useState, useEffect } from 'react';
-import {
-  DocumentReference,
-  onSnapshot,
-  DocumentData,
-  FirestoreError,
-  DocumentSnapshot,
-} from 'firebase/firestore';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/** Utility type to add an 'id' field to a given type T. */
-type WithId<T> = T & { id: string };
-
-/**
- * Interface for the return value of the useDoc hook.
- * @template T Type of the document data.
- */
-export interface UseDocResult<T> {
-  data: WithId<T> | null; // Document data with ID, or null.
-  isLoading: boolean;       // True if loading.
-  error: FirestoreError | Error | null; // Error object, or null.
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
 }
 
-/**
- * React hook to subscribe to a single Firestore document in real-time.
- * Handles nullable references.
- * 
- * IMPORTANT! YOU MUST MEMOIZE the inputted memoizedTargetRefOrQuery or BAD THINGS WILL HAPPEN
- * use useMemo to memoize it per React guidence.  Also make sure that it's dependencies are stable
- * references
- *
- *
- * @template T Optional type for document data. Defaults to any.
- * @param {DocumentReference<DocumentData> | null | undefined} docRef -
- * The Firestore DocumentReference. Waits if null/undefined.
- * @returns {UseDocResult<T>} Object with data, isLoading, error.
- */
-export function useDoc<T = any>(
-  memoizedDocRef: DocumentReference<DocumentData> | null | undefined,
-): UseDocResult<T> {
-  type StateDataType = WithId<T> | null;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-  const [data, setData] = useState<StateDataType>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<FirestoreError | Error | null>(null);
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 
-  useEffect(() => {
-    if (!memoizedDocRef) {
-      setData(null);
-      setIsLoading(false);
-      setError(null);
-      return;
-    }
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
 
-    setIsLoading(true);
-    setError(null);
-    // Optional: setData(null); // Clear previous data instantly
-
-    const unsubscribe = onSnapshot(
-      memoizedDocRef,
-      (snapshot: DocumentSnapshot<DocumentData>) => {
-        if (snapshot.exists()) {
-          setData({ ...(snapshot.data() as T), id: snapshot.id });
-        } else {
-          // Document does not exist
-          setData(null);
-        }
-        setError(null); // Clear any previous error on successful snapshot (even if doc doesn't exist)
-        setIsLoading(false);
-      },
-      (error: FirestoreError) => {
-        const contextualError = new FirestorePermissionError({
-          operation: 'get',
-          path: memoizedDocRef.path,
-        })
-
-        setError(contextualError)
-        setData(null)
-        setIsLoading(false)
-
-        // trigger global error propagation
-        errorEmitter.emit('permission-error', contextualError);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [memoizedDocRef]); // Re-run if the memoizedDocRef changes.
-
-  return { data, isLoading, error };
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

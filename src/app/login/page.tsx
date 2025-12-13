@@ -1,160 +1,68 @@
-'use client';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/firebase';
-import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
-import type { FirebaseError } from 'firebase/app';
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
+}
 
-const Logo = () => (
-    <div className="flex items-center justify-center space-x-2 space-x-reverse">
-        <svg
-            className="w-12 h-12 text-gold-accent"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
-            <path d="M12 18a6 6 0 0 0-6-6h12a6 6 0 0 0-6 6z"></path>
-            <path d="M12 2v4"></path>
-            <path d="M12 12v6"></path>
-            <path d="M4.93 4.93l2.83 2.83"></path>
-            <path d="M16.24 16.24l2.83 2.83"></path>
-            <path d="M2 12h4"></path>
-            <path d="M18 12h4"></path>
-            <path d="M4.93 19.07l2.83-2.83"></path>
-            <path d="M16.24 7.76l2.83-2.83"></path>
-        </svg>
-    </div>
-);
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 
-export default function LoginPage() {
-  const auth = useAuth();
-  const router = useRouter();
-  const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!auth) {
-        toast({ variant: "destructive", title: "خطأ", description: "خدمة المصادقة غير متاحة."});
-        return;
-    }
-    setIsSubmitting(true);
-    initiateEmailSignIn(auth, email, password, (result) => {
-        if(result.success && result.user) {
-            toast({
-                title: `مرحباً بعودتك!`,
-                description: "تم تسجيل دخولك بنجاح."
-            });
-            // The useUser hook's onAuthStateChanged listener in the provider
-            // will handle fetching the full user profile and redirecting.
-            // We just push to the root page.
-            router.push('/');
-        } else if (result.error) {
-            let description = "البريد الإلكتروني أو كلمة السر غير صحيحة. يرجى المحاولة مرة أخرى.";
-            switch(result.error.code) {
-                case 'auth/user-not-found':
-                case 'auth/invalid-credential':
-                    description = "هذا الحساب غير مسجل. هل تودين إنشاء حساب جديد؟";
-                    break;
-                case 'auth/wrong-password':
-                    description = "كلمة السر غير صحيحة. يرجى المحاولة مرة أخرى.";
-                    break;
-                 case 'auth/invalid-email':
-                    description = "صيغة البريد الإلكتروني غير صحيحة.";
-                    break;
-            }
-            toast({
-                variant: "destructive",
-                title: "فشل تسجيل الدخول",
-                description: description
-            });
-        }
-        setIsSubmitting(false);
-    });
-  };
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-nile-dark p-4">
-      <Card className="w-full max-w-sm mx-auto dashboard-card text-white">
-        <CardHeader className="text-center">
-          <div className="flex justify-center items-center mb-4">
-             <Logo />
-          </div>
-          <CardTitle className="text-3xl royal-title">بوابة العودة الملكية</CardTitle>
-          <CardDescription className="text-sand-ochre">أدخل أوراق اعتمادك للعودة إلى مملكتك</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="text-sand-ochre">البريد الإلكتروني</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="example@yallamasry.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-nile-dark border-sand-ochre text-white placeholder:text-sand-ochre/50 focus:ring-gold-accent"
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password" className="text-sand-ochre">كلمة السر</Label>
-                  <Link
-                    href="#"
-                    className="mr-auto inline-block text-sm text-sand-ochre underline"
-                  >
-                    نسيت كلمة السر؟
-                  </Link>
-                </div>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-nile-dark border-sand-ochre text-white focus:ring-gold-accent"
-                  disabled={isSubmitting}
-                />
-              </div>
-              <Button type="submit" className="w-full cta-button" disabled={isSubmitting}>
-                {isSubmitting ? 'جاري الدخول...' : 'تسجيل الدخول'}
-              </Button>
-            </div>
-          </form>
-          <div className="mt-4 text-center text-sm text-sand-ochre">
-            لا تملك حساباً؟{' '}
-            <Link href="/signup" className="underline font-bold">
-              انضم إلى المملكة
-            </Link>
-          </div>
-           <div className="mt-2 text-center text-xs text-gray-400">
-            مستخدم جديد؟ سيتم توجيهك لاختيار هدفك بعد الإنضمام.
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

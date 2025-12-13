@@ -1,181 +1,68 @@
-'use client';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/firebase';
-import { initiateEmailSignUp, updateProfileNonBlocking } from '@/firebase/non-blocking-login';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
+}
 
-const Logo = () => (
-    <div className="flex items-center justify-center space-x-2 space-x-reverse">
-        <svg
-            className="w-12 h-12 text-gold-accent"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
-            <path d="M12 18a6 6 0 0 0-6-6h12a6 6 0 0 0-6 6z"></path>
-            <path d="M12 2v4"></path>
-            <path d="M12 12v6"></path>
-            <path d="M4.93 4.93l2.83 2.83"></path>
-            <path d="M16.24 16.24l2.83 2.83"></path>
-            <path d="M2 12h4"></path>
-            <path d="M18 12h4"></path>
-            <path d="M4.93 19.07l2.83-2.83"></path>
-            <path d="M16.24 7.76l2.83-2.83"></path>
-        </svg>
-    </div>
-);
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-export default function SignupPage() {
-  const auth = useAuth();
-  const router = useRouter();
-  const { toast } = useToast();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!auth) {
-        toast({
-            variant: "destructive",
-            title: "خطأ في التهيئة",
-            description: "خدمة المصادقة غير متاحة. يرجى المحاولة لاحقًا.",
-        });
-        return;
-    }
-    setIsSubmitting(true);
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
 
-    // The name is passed to the Firebase Auth `displayName` field here.
-    // The provider will then read this and use it to create the Firestore document.
-    initiateEmailSignUp(auth, email, password, (result) => {
-        if (result.success && result.user) {
-            const user = result.user;
-            // This is a crucial step: we update the Firebase Auth user profile
-            // with the name from the form. This name will be read by the onAuthStateChanged
-            // listener in FirebaseProvider to create the Firestore user document correctly.
-            updateProfileNonBlocking(user, { displayName: name }, (profileResult) => {
-                setIsSubmitting(false);
-                if(profileResult.success) {
-                    toast({
-                        title: "تم إنشاء الحساب بنجاح!",
-                        description: `مرحباً بكِ يا ${name}! سيتم توجيهك الآن لاختيار هدفك.`
-                    });
-                    // The onAuthStateChanged listener in FirebaseProvider will now detect
-                    // this new user and automatically redirect them to '/goals'.
-                    // We don't need to manually push the router here.
-                } else {
-                     toast({
-                        variant: "destructive",
-                        title: "نجح إنشاء الحساب، ولكن فشل تحديث الاسم",
-                        description: profileResult.error?.message || 'يرجى تحديث اسمك من صفحة الملف الشخصي لاحقًا.'
-                    });
-                    router.push('/'); // Redirect to home as a fallback.
-                }
-            });
-        } else if (result.error) {
-            setIsSubmitting(false);
-            let description = "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.";
-            switch(result.error.code) {
-                case 'auth/email-already-in-use':
-                    description = "هذا البريد الإلكتروني مسجل بالفعل. هل تريدين تسجيل الدخول؟";
-                    break;
-                case 'auth/weak-password':
-                    description = "كلمة السر ضعيفة جدًا. يجب أن تتكون من 6 أحرف على الأقل.";
-                    break;
-                case 'auth/invalid-email':
-                    description = "صيغة البريد الإلكتروني غير صحيحة.";
-                    break;
-            }
-            toast({
-                variant: "destructive",
-                title: "فشل إنشاء الحساب",
-                description: description,
-            });
-        }
-    });
-  };
-
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-nile-dark p-4">
-      <Card className="w-full max-w-sm mx-auto dashboard-card text-white">
-        <CardHeader className="text-center">
-          <div className="flex justify-center items-center mb-4">
-            <Logo />
-          </div>
-          <CardTitle className="text-3xl royal-title">سجل هويتك الفرعونية</CardTitle>
-          <CardDescription className="text-sand-ochre">انضم إلى نخبة المتعلمين في أكاديمية يلا مصري</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSignup}>
-            <div className="grid gap-4">
-               <div className="grid gap-2">
-                <Label htmlFor="name" className="text-sand-ochre">اسمك أو لقبك (سيظهر للجميع)</Label>
-                <Input 
-                  id="name" 
-                  placeholder="مثال: حتشبسوت" 
-                  required 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="bg-nile-dark border-sand-ochre text-white placeholder:text-sand-ochre/50 focus:ring-gold-accent"
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="text-sand-ochre">البريد الإلكتروني</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="example@yallamasry.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-nile-dark border-sand-ochre text-white placeholder:text-sand-ochre/50 focus:ring-gold-accent"
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password" className="text-sand-ochre">كلمة السر</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  required 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-nile-dark border-sand-ochre text-white focus:ring-gold-accent"
-                  disabled={isSubmitting}
-                />
-              </div>
-              <Button type="submit" className="w-full cta-button" disabled={isSubmitting}>
-                {isSubmitting ? 'جاري الإنشاء...' : 'إنشاء حساب ملكي'}
-              </Button>
-            </div>
-          </form>
-          <div className="mt-4 text-center text-sm text-sand-ochre">
-            هل تملك حساباً بالفعل؟{' '}
-            <Link href="/login" className="underline font-bold">
-              الدخول إلى المملكة
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

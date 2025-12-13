@@ -5,47 +5,26 @@
 
 @layer base {
   :root {
-    --background: 231 55% 95%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 231 48% 48%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 231 48% 90%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 231 48% 90%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 16 100% 70%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 231 48% 88%;
-    --input: 231 48% 88%;
-    --ring: 231 48% 48%;
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 231 48% 48%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 16 100% 70%;
-    --accent-foreground: 240 5.9% 10%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 231 48% 48%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
   }
 }
 
@@ -60,48 +39,18 @@
 
 /* Yalla Masry Academy Styles */
 body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
+
 :root {
+    --nile-dark: #0d284e;
     --nile-blue: #0b4e8d;
     --gold-accent: #FFD700;
     --sand-ochre: #d6b876;
     --dark-granite: #2a2a2a;
-    --nile-dark: #0d284e;
 }
 
 .royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
-.bg-nile-dark { background-color: #0d284e; }
-.bg-nile { background-color: var(--nile-blue); }
-
-.dashboard-card {
-    background: linear-gradient(145deg, #1c3d6d, #0d284e);
-    border: 2px solid var(--gold-accent);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-}
-
-.stat-card {
-    background-color: #17365e;
-    border-bottom: 4px solid var(--sand-ochre);
-    transition: transform 0.3s, background-color 0.3s;
-}
-.stat-card:hover {
-    background-color: #23487f;
-    transform: translateY(-5px);
-}
-
-.progress-bar-royal {
-    height: 12px;
-    background-color: #4b6992;
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid var(--gold-accent);
-}
-.progress-fill-royal {
-    height: 100%;
-    width: 0%;
-    background-color: var(--gold-accent);
-    transition: width 0.6s ease-out;
-}
-
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
 .cta-button {
     background-color: var(--gold-accent);
     color: var(--dark-granite);
@@ -116,253 +65,5 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 .cta-button:disabled {
     background-color: #7a7a7a;
     cursor: not-allowed;
-    transform: none;
-    opacity: 0.5;
-}
-
-
-.challenge-item {
-    background-color: #0b4e8d;
-    border-right: 5px solid var(--gold-accent);
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-.challenge-item:hover {
-    background-color: #094073;
-}
-
-.icon-symbol {
-    color: var(--sand-ochre);
-}
-
-.utility-button {
-    background-color: #0b4e8d;
-    color: var(--sand-ochre);
-    border: 2px solid var(--sand-ochre);
-    transition: background-color 0.3s, border-color 0.3s;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-.utility-button:hover {
-    background-color: #083c6b;
-    border-color: var(--gold-accent);
-}
-
-.leaderboard-card {
-    background-color: #17365e;
-    border: 2px solid var(--sand-ochre);
-}
-.user-alias {
-    font-family: 'Cairo', sans-serif;
-}
-
-#alias-input {
-    background-color: #0b4e8d;
-    border: 1px solid var(--sand-ochre);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-}
-#alias-input::placeholder {
-    color: #d6b876aa;
-}
-#alias-input:disabled {
-    background-color: #1c2c44;
-    cursor: not-allowed;
-}
-
-.alias-management-card {
-    background-color: #17365e;
-    border: 1px solid var(--sand-ochre);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-/* 3D Museum Styles (Updated) */
-.museum-body {
-    margin: 0;
-    overflow: hidden;
-    font-family: 'El Messiri', sans-serif;
-    background-color: #000000;
-    cursor: default; 
-}
-.museum-body canvas { display: block; }
-
-#info-panel {
-    position: fixed; 
-    z-index: 30;
-    top: 50%;
-    left: 50%;
-    background: rgba(0, 0, 0, 0.95);
-    color: #FFD700;
-    border-radius: 12px; 
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
-    padding: 16px;
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    max-width: 350px;
-    width: 90%; 
-    text-align: right;
-    border: 2px solid #D4AF37; 
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transform: translate(-50%, -50%) scale(0.8);
-}
-#info-panel.visible {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-#artifact-title {
-    font-size: 1.25rem; 
-    margin-bottom: 8px;
-}
-#artifact-description, #puzzle-text {
-    font-size: 0.85rem;
-    line-height: 1.5;
-}
-
-#blocker {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.98);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transition: opacity 0.5s ease-in-out;
-    pointer-events: auto;
-    z-index: 20; 
-}
-#blocker.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-#markers-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 8;
-}
-
-.artifact-marker {
-    position: absolute;
-    pointer-events: auto;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    cursor: pointer;
-    width: 35px;
-    height: 35px;
-    background-color: rgba(255, 215, 0, 0.9); 
-    color: #000;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-    transform: translate(-50%, -50%) scale(1);
-}
-.artifact-marker:hover {
-    background-color: #FFD700;
-    box-shadow: 0 0 15px #FFD700;
-    transform: translate(-50%, -50%) scale(1.15); 
-}
-.marker-title {
-    position: absolute;
-    top: 40px; 
-    font-size: 0.75rem;
-    color: #FFD700;
-    text-shadow: 0 0 4px #000;
-    white-space: nowrap;
-}
-
-#report-button {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 10;
-}
-
-#academic-report-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.98);
-    z-index: 25;
-    display: none;
-    overflow-y: auto;
-    align-items: center;
-    justify-content: center;
-}
-
-.report-card {
-    background-color: #1a1a1a;
-    border: 2px solid #D4AF37;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
-    max-width: 900px;
-    width: 90%;
-    padding: 30px;
-    margin: 20px auto;
-    color: #fff;
-    text-align: right;
-    transform: scale(1);
-}
-
-.artifact-status-item {
-    background-color: #2e2e2e;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.achieved-icon { color: #38a169; }
-.pending-icon { color: #f6ad55; }
-
-.info-button {
-    padding: 8px 12px; 
-    font-size: 0.9rem;
-}
-
-.alert-message {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translate(-50%, 0);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    z-index: 100;
-    font-family: 'El Messiri', sans-serif;
-    opacity: 1;
-    transition: opacity 0.3s ease-out;
-}
-
-.spinner {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top: 4px solid #FFD700;
-    width: 16px;
-    height: 16px;
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    margin-right: 8px;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    opacity: 0.7;
 }

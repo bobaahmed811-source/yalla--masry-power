@@ -1,64 +1,68 @@
-'use client';
-import { FirestorePermissionError } from '@/firebase/errors';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/**
- * Defines the shape of all possible events and their corresponding payload types.
- * This centralizes event definitions for type safety across the application.
- */
-export interface AppEvents {
-  'permission-error': FirestorePermissionError;
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
 }
 
-// A generic type for a callback function.
-type Callback<T> = (data: T) => void;
-
-/**
- * A strongly-typed pub/sub event emitter.
- * It uses a generic type T that extends a record of event names to payload types.
- */
-function createEventEmitter<T extends Record<string, any>>() {
-  // The events object stores arrays of callbacks, keyed by event name.
-  // The types ensure that a callback for a specific event matches its payload type.
-  const events: { [K in keyof T]?: Array<Callback<T[K]>> } = {};
-
-  return {
-    /**
-     * Subscribe to an event.
-     * @param eventName The name of the event to subscribe to.
-     * @param callback The function to call when the event is emitted.
-     */
-    on<K extends keyof T>(eventName: K, callback: Callback<T[K]>) {
-      if (!events[eventName]) {
-        events[eventName] = [];
-      }
-      events[eventName]?.push(callback);
-    },
-
-    /**
-     * Unsubscribe from an event.
-     * @param eventName The name of the event to unsubscribe from.
-     * @param callback The specific callback to remove.
-     */
-    off<K extends keyof T>(eventName: K, callback: Callback<T[K]>) {
-      if (!events[eventName]) {
-        return;
-      }
-      events[eventName] = events[eventName]?.filter(cb => cb !== callback);
-    },
-
-    /**
-     * Publish an event to all subscribers.
-     * @param eventName The name of the event to emit.
-     * @param data The data payload that corresponds to the event's type.
-     */
-    emit<K extends keyof T>(eventName: K, data: T[K]) {
-      if (!events[eventName]) {
-        return;
-      }
-      events[eventName]?.forEach(callback => callback(data));
-    },
-  };
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-// Create and export a singleton instance of the emitter, typed with our AppEvents interface.
-export const errorEmitter = createEventEmitter<AppEvents>();
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
+
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
+
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

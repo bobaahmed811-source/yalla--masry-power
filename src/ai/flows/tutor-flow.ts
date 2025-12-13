@@ -1,82 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-'use server';
-/**
- * @fileOverview A "smart tutor" AI flow for the Yalla Masry Academy.
- *
- * This file defines the AI logic for a tutoring agent that answers student questions
- * based on a provided piece of course material (context).
- *
- * - AITutorInput: The Zod schema for the flow's input (course material and question).
- * - AITutorOutput: The Zod schema for the flow's output (the AI-generated answer).
- * - getTutorResponseFlow: The main server action that invokes the Genkit flow.
- */
-
-import { ai } from '@/ai/index';
-import { z } from 'zod';
-
-// Define the input schema for the AI tutor flow.
-export const AITutorInputSchema = z.object({
-  courseMaterial: z.string().describe('The course material or text to be analyzed.'),
-  question: z.string().describe('The user’s question about the course material.'),
-});
-export type AITutorInput = z.infer<typeof AITutorInputSchema>;
-
-// Define the output schema for the AI tutor flow.
-export const AITutorOutputSchema = z.object({
-  answer: z.string().describe('The AI tutor’s answer to the question.'),
-});
-export type AITutorOutput = z.infer<typeof AITutorOutputSchema>;
-
-/**
- * Defines a Genkit prompt for the AI tutor.
- * The prompt instructs the AI to act as an expert in Egyptian Colloquial Arabic
- * and answer questions strictly based on the provided context.
- */
-const tutorPrompt = ai.definePrompt({
-  name: 'tutorPrompt',
-  input: { schema: AITutorInputSchema },
-  output: { schema: AITutorOutputSchema },
-  prompt: `You are an expert AI tutor for the Yalla Masry Academy, specializing in Egyptian Colloquial Arabic.
-Your role is to answer student questions based *only* on the provided course material (context).
-Do not use any external knowledge. If the answer is not in the context, politely state that.
-
-Context (Course Material):
-"""
-{{{courseMaterial}}}
-"""
-
-Student's Question:
-"""
-{{{question}}}
-"""
-
-Answer the student's question based on the context above.`,
-});
-
-/**
- * Defines the main Genkit flow for the AI tutor.
- * This flow takes the course material and question, calls the prompt,
- * and returns the generated answer.
- */
-const tutorFlow = ai.defineFlow(
-  {
-    name: 'tutorFlow',
-    inputSchema: AITutorInputSchema,
-    outputSchema: AITutorOutputSchema,
-  },
-  async (input) => {
-    const { output } = await tutorPrompt(input);
-    return output!;
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
   }
-);
+}
 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-/**
- * The server action wrapper for the Genkit flow.
- * This function is called from the client-side to execute the AI tutor logic.
- * @param input The course material and the user's question.
- * @returns The AI-generated answer.
- */
-export async function getTutorResponseFlow(input: AITutorInput): Promise<AITutorOutput> {
-    return await tutorFlow(input);
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
+
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
+
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

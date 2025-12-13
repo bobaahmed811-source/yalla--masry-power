@@ -1,209 +1,68 @@
-'use client';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-import React, { useMemo, useState } from 'react';
-import Link from 'next/link';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
-import { ArrowRight, BookCopy, Car, Loader2, ShoppingBasket, Utensils, Volume2 } from 'lucide-react';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { getSpeechAudio } from '@/app/ai-actions';
-
-interface AdventureChallenge {
-  id: string;
-  gulf_phrase: string;
-  egyptian_phrase: string;
-  explanation?: string;
-  category: string;
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
 }
 
-const STOPS = [
-    { 
-        id: 'taxi',
-        title: 'المحطة الأولى: حوار مع سائق التاكسي', 
-        description: 'تتعلم نوف كيف تطلب وتتفاهم مع سائقي الأجرة في شوارع القاهرة.',
-        icon: Car, 
-        category: 'المواصلات'
-    },
-    { 
-        id: 'market',
-        title: 'المحطة الثانية: مساومات في خان الخليلي', 
-        description: 'تخوض نوف مغامرة الشراء والمساومة في أشهر أسواق مصر.',
-        icon: ShoppingBasket, 
-        category: 'في السوق'
-    },
-    { 
-        id: 'restaurant',
-        title: 'المحطة الثالثة: طلبات في مطعم كشري',
-        description: 'تكتشف نوف طريقة طلب الأطباق المصرية الأصيلة.',
-        icon: Utensils,
-        category: 'الطعام والشراب'
-    },
-];
-
-const groupChallengesByCategory = (challenges: AdventureChallenge[] | null) => {
-    if (!challenges) return {};
-    return challenges.reduce((acc, challenge) => {
-        const category = challenge.category || 'مصطلحات عامة';
-        if (!acc[category]) {
-            acc[category] = [];
-        }
-        acc[category].push(challenge);
-        return acc;
-    }, {} as Record<string, AdventureChallenge[]>);
-};
-
-const ChallengeCard = ({ challenge }: { challenge: AdventureChallenge }) => {
-    const { toast } = useToast();
-    const [isLoadingAudio, setIsLoadingAudio] = useState<string | null>(null);
-
-    const playAudio = async (text: string, type: 'gulf' | 'egyptian') => {
-        setIsLoadingAudio(type);
-        toast({ title: 'جاري توليد الصوت...', description: 'قد يستغرق هذا بضع ثوانٍ.' });
-        try {
-            const result = await getSpeechAudio(text);
-            if (result.error || !result.media) {
-                throw new Error(result.error || 'لم يتم إرجاع أي مقطع صوتي.');
-            }
-            const audio = new Audio(result.media);
-            audio.play();
-            toast({ title: 'تم!', description: `تشغيل: "${text}"` });
-        } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: '❌ خطأ في توليد الصوت',
-                description: (error as Error).message,
-            });
-        } finally {
-            setIsLoadingAudio(null);
-        }
-    };
-
-    return (
-        <div className="dashboard-card p-5 rounded-lg border-l-4 border-gold-accent/50">
-            <div className="grid grid-cols-2 gap-4 items-center">
-                <div className="text-center space-y-2">
-                    <p className="text-sm text-sand-ochre font-bold">نوف تقول (بالخليجي)</p>
-                    <p className="text-2xl font-bold text-white min-h-[64px] flex items-center justify-center">{challenge.gulf_phrase}</p>
-                    <Button size="icon" onClick={() => playAudio(challenge.gulf_phrase, 'gulf')} disabled={!!isLoadingAudio} className="cta-button rounded-full w-10 h-10">
-                        {isLoadingAudio === 'gulf' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
-                    </Button>
-                </div>
-                <div className="text-center border-r-2 border-sand-ochre/20 space-y-2">
-                    <p className="text-sm text-sand-ochre font-bold">المرادف المصري</p>
-                    <p className="text-2xl font-bold text-white min-h-[64px] flex items-center justify-center">{challenge.egyptian_phrase}</p>
-                    <Button size="icon" onClick={() => playAudio(challenge.egyptian_phrase, 'egyptian')} disabled={!!isLoadingAudio} className="cta-button rounded-full w-10 h-10">
-                        {isLoadingAudio === 'egyptian' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Volume2 className="w-5 h-5" />}
-                    </Button>
-                </div>
-            </div>
-            {challenge.explanation && (
-                <div className="mt-4 pt-3 border-t border-sand-ochre/20">
-                    <p className="text-sm text-gray-300"><strong className="text-gold-accent flex items-center gap-1"><BookCopy size={14}/> توضيح اللهجة:</strong> {challenge.explanation}</p>
-                </div>
-            )}
-        </div>
-    );
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-export default function NoufsJourneyPage() {
-  const firestore = useFirestore();
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 
-  const adventureCollection = useMemoFirebase(() => {
-    return firestore ? collection(firestore, 'adventure_challenges') : null;
-  }, [firestore]);
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
 
-  const { data: challenges, isLoading, error } = useCollection<AdventureChallenge>(adventureCollection);
-
-  const challengesByStop = useMemo(() => groupChallengesByCategory(challenges), [challenges]);
-
-  return (
-    <div 
-      className="min-h-screen p-4 md:p-8 flex flex-col bg-nile-dark"
-      style={{ direction: 'rtl' }}
-    >
-      <header className="text-center my-12 relative">
-        <div className="flex flex-col items-center justify-center">
-            <div className="relative mb-4">
-                <Image
-                    src="https://picsum.photos/seed/nouf-avatar/200/200"
-                    alt="شخصية نوف الكرتونية"
-                    width={120}
-                    height={120}
-                    className="rounded-full border-4 border-gold-accent shadow-lg"
-                    data-ai-hint="saudi girl cartoon"
-                />
-                 <span className="absolute -bottom-2 -right-2 text-4xl">🇸🇦</span>
-            </div>
-            <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2 royal-title">
-              رحلة نوف في مصر
-            </h1>
-            <p className="text-xl text-sand-ochre max-w-2xl mx-auto">
-              انضمي إلى نوف، فتاة سعودية شجاعة، في مغامرتها لاستكشاف اللهجة المصرية. في كل محطة، ستواجه تحديات لغوية جديدة وتتعلم كيف تتواصل كأهل البلد.
-            </p>
-        </div>
-      </header>
-
-      <main className="w-full max-w-4xl mx-auto flex-grow">
-        {isLoading && (
-            <div className="flex justify-center items-center h-64">
-                <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
-                <p className="text-center text-lg text-sand-ochre ml-4">جاري تحضير محطات رحلة نوف...</p>
-            </div>
-        )}
-        {error && <p className="text-center text-lg text-red-400">حدث خطأ أثناء تحميل الرحلة: {error.message}</p>}
-
-        {!isLoading && challenges && (
-          <div className="space-y-12">
-            {STOPS.map((stop) => {
-                const stopChallenges = challengesByStop[stop.category] || [];
-                return (
-                    <section key={stop.id}>
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="flex-shrink-0 bg-gold-accent text-nile-dark p-3 rounded-full shadow-md">
-                                <stop.icon className="w-8 h-8" />
-                            </div>
-                            <div>
-                               <h2 className="text-3xl font-bold royal-title text-gold-accent">{stop.title}</h2>
-                               <p className="text-sand-ochre">{stop.description}</p>
-                            </div>
-                        </div>
-
-                        {stopChallenges.length > 0 ? (
-                        <div className="space-y-4">
-                            {stopChallenges.map(challenge => (
-                                <ChallengeCard key={challenge.id} challenge={challenge} />
-                            ))}
-                        </div>
-                        ) : (
-                            <div className="dashboard-card p-5 rounded-lg text-center">
-                                 <p className="text-sand-ochre">لم تصل رحلة نوف إلى هذه المحطة بعد. أضف تحديات من ديوان الإدارة!</p>
-                            </div>
-                        )}
-                    </section>
-                )
-            })}
-          </div>
-        )}
-         {!isLoading && (!challenges || challenges.length === 0) && (
-            <div className="dashboard-card p-8 rounded-lg text-center">
-                <p className="text-xl text-sand-ochre">رحلة نوف لم تبدأ بعد!</p>
-                <p className="text-gray-300 mt-2">يبدو أنه لا توجد تحديات في "ديوان الإدارة". اذهب وأضف بعض التحديات لتبدأ مغامرة نوف.</p>
-                <Link href="/admin">
-                    <Button className="cta-button mt-4">اذهب إلى ديوان الإدارة</Button>
-                </Link>
-            </div>
-        )}
-      </main>
-
-      <footer className="mt-auto pt-12 text-center text-gray-400 text-sm">
-         <Link href="/" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center mx-auto w-fit">
-            <ArrowRight className="ml-2 h-4 w-4" />
-            <span>العودة للوحة التحكم الرئيسية</span>
-        </Link>
-        <p className="mt-4">جميع الحقوق محفوظة لأكاديمية يلا مصري © 2024</p>
-      </footer>
-    </div>
-  );
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

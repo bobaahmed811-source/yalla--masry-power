@@ -1,184 +1,68 @@
-'use client';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
-import Link from 'next/link';
-import { useFirestore, useDoc, useUser, useMemoFirebase } from '@/firebase';
-import { doc, collection, getDocs, query, orderBy, setDoc } from 'firebase/firestore';
-import { useToast } from '@/hooks/use-toast';
-import { updateProgress } from '@/lib/course-utils';
-
-// Define the type for the lesson document
-interface Lesson {
-    id: string;
-    title: string;
-    content: string;
-    videoUrl?: string; // Optional video URL
-    order: number;
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
 }
 
-interface NavigationState {
-    prevLessonId: string | null;
-    nextLessonId: string | null;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-export default function LessonPage() {
-  const params = useParams();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const firestore = useFirestore();
-  const { user } = useUser();
-  const { toast } = useToast();
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 
-  const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
-  const courseId = searchParams.get('courseId');
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
 
-  const [navigation, setNavigation] = useState<NavigationState>({ prevLessonId: null, nextLessonId: null });
-  const [isNavLoading, setIsNavLoading] = useState(true);
-
-  const lessonDocRef = useMemoFirebase(() => {
-    if (!firestore || !courseId || !lessonId) return null;
-    return doc(firestore, `courses/${courseId}/lessons`, lessonId);
-  }, [firestore, courseId, lessonId]);
-
-  const { data: lesson, isLoading, error } = useDoc<Lesson>(lessonDocRef);
-
-  useEffect(() => {
-    const fetchCourseLessons = async () => {
-      if (!firestore || !courseId || !lesson) return;
-
-      setIsNavLoading(true);
-      const lessonsQuery = query(collection(firestore, `courses/${courseId}/lessons`), orderBy('order'));
-      const querySnapshot = await getDocs(lessonsQuery);
-      const allLessons = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Lesson));
-      
-      const currentIndex = allLessons.findIndex(l => l.id === lessonId);
-      
-      if (currentIndex !== -1) {
-        setNavigation({
-          prevLessonId: currentIndex > 0 ? allLessons[currentIndex - 1].id : null,
-          nextLessonId: currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1].id : null,
-        });
-      }
-      setIsNavLoading(false);
-    };
-
-    fetchCourseLessons();
-  }, [firestore, courseId, lessonId, lesson]);
-
-
-  const handleNavigate = async (targetLessonId: string | null) => {
-    if (!targetLessonId || !courseId || !user || !firestore) return;
-    
-    // Optimistically navigate
-    router.push(`/learning-path/${targetLessonId}?courseId=${courseId}`);
-
-    // Update progress in the background only when moving to the next lesson
-    if (targetLessonId === navigation.nextLessonId) {
-        try {
-            await updateProgress(firestore, user.uid, courseId, lessonId);
-            toast({
-              title: "الإنجاز الملكي!",
-              description: `أحسنت! لقد أكملت درس "${lesson?.title}"`,
-            });
-        } catch (error) {
-            console.error("Failed to update progress:", error);
-            toast({
-                variant: 'destructive',
-                title: 'خطأ',
-                description: 'فشل تحديث تقدمك. لكن لا تقلق، يمكنك متابعة التعلم.',
-            });
-        }
-    }
-  };
-
-
-  if (isLoading) {
-    return (
-        <div className="min-h-screen bg-nile-dark flex items-center justify-center text-white">
-            <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
-            <p className="text-xl ml-4">جاري تحميل الدرس...</p>
-        </div>
-    );
-  }
-
-  if (error) {
-     return (
-        <div className="min-h-screen bg-nile-dark flex flex-col items-center justify-center text-white text-center p-4">
-            <h1 className="text-3xl royal-title text-red-500 mb-4">حدث خطأ ملكي</h1>
-            <p className="text-sand-ochre mb-6">لم نتمكن من جلب الدرس. قد تكون هناك مشكلة في الصلاحيات أو أن الدرس غير موجود.</p>
-            <p className="text-sm text-gray-500 bg-black/20 p-2 rounded">{error.message}</p>
-             <Link href="/learning-path" className="utility-button mt-8">
-                العودة إلى مسار التعلم
-            </Link>
-        </div>
-    )
-  }
-  
-  if (!lesson) {
-     return (
-        <div className="min-h-screen bg-nile-dark flex flex-col items-center justify-center text-white text-center">
-            <h1 className="text-3xl royal-title text-sand-ochre mb-4">الدرس غير موجود</h1>
-            <p className="text-lg mb-8">عفواً، هذا الدرس غير متوفر في سجلاتنا.</p>
-            <Link href="/learning-path" className="utility-button">
-                العودة إلى مسار التعلم
-            </Link>
-        </div>
-    );
-  }
-
-
-  return (
-    <div className="min-h-screen bg-nile-dark text-white p-4 md:p-8" style={{ direction: 'rtl' }}>
-      <main className="max-w-4xl mx-auto">
-        <div className="dashboard-card p-6 md:p-8 rounded-2xl">
-          
-          <header className="mb-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-extrabold royal-title mb-3">
-              {lesson.title}
-            </h1>
-             <Link href="/learning-path" className="text-sm text-sand-ochre hover:text-gold-accent transition-colors">
-                &larr; العودة إلى مسار التعلم
-            </Link>
-          </header>
-
-          {/* Video Player */}
-          {lesson.videoUrl && (
-            <section className="mb-8">
-                <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-2xl border-4 border-gold-accent">
-                    <iframe
-                        src={lesson.videoUrl}
-                        title="Lesson Video Player"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="w-full h-full"
-                    ></iframe>
-                </div>
-            </section>
-          )}
-
-          {/* Lesson Content */}
-          <section 
-            className="prose prose-invert max-w-none text-white text-lg leading-loose" 
-            dangerouslySetInnerHTML={{ __html: lesson.content }} 
-          />
-
-          {/* Navigation */}
-          <footer className="mt-10 pt-6 border-t-2 border-sand-ochre/20 flex justify-between items-center">
-            <Button onClick={() => handleNavigate(navigation.prevLessonId)} disabled={!navigation.prevLessonId || isNavLoading} className="utility-button">
-              <ArrowRight className="ml-2 h-5 w-5" />
-              {isNavLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'الدرس السابق'}
-            </Button>
-            <Button onClick={() => handleNavigate(navigation.nextLessonId)} disabled={!navigation.nextLessonId || isNavLoading} className="cta-button">
-              {isNavLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'أكملت الدرس! التالي'}
-              <ArrowLeft className="mr-2 h-5 w-5" />
-            </Button>
-          </footer>
-        </div>
-      </main>
-    </div>
-  );
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

@@ -1,83 +1,68 @@
-'use client';
-import {
-  Auth,
-  signInAnonymously,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile,
-  User,
-  onAuthStateChanged,
-  signOut,
-  FirebaseError,
-} from 'firebase/auth';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-type AuthResult = {
-    success: boolean;
-    user?: User | null;
-    error?: FirebaseError;
-};
-
-/** Initiate anonymous sign-in (non-blocking). */
-export function initiateAnonymousSignIn(authInstance: Auth): void {
-  signInAnonymously(authInstance);
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
 }
 
-/** Initiate email/password sign-up (non-blocking). */
-export function initiateEmailSignUp(authInstance: Auth, email: string, password: string, callback?: (result: AuthResult) => void): void {
-  createUserWithEmailAndPassword(authInstance, email, password)
-    .then(userCredential => {
-        if (callback) {
-            callback({ success: true, user: userCredential.user });
-        }
-    })
-    .catch((error: FirebaseError) => {
-        console.error("Error signing up:", error);
-        if (callback) {
-            callback({ success: false, error: error });
-        }
-    });
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-/** Initiate email/password sign-in (non-blocking). */
-export function initiateEmailSignIn(authInstance: Auth, email: string, password: string, callback?: (result: AuthResult) => void): void {
-  signInWithEmailAndPassword(authInstance, email, password)
-    .then(userCredential => {
-        if (callback) {
-            callback({ success: true, user: userCredential.user });
-        }
-    })
-    .catch((error: FirebaseError) => {
-        console.error("Error signing in:", error);
-        if (callback) {
-            callback({ success: false, error: error });
-        }
-    });
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
+
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
 }
 
-
-/** Update user profile (non-blocking). */
-export function updateProfileNonBlocking(user: User, profileData: { displayName?: string; photoURL?: string; }, callback?: (result: AuthResult) => void): void {
-    updateProfile(user, profileData)
-    .then(() => {
-        if (callback) {
-            callback({ success: true, user });
-        }
-    })
-    .catch(error => {
-        console.error("Error updating profile:", error);
-        if (callback) {
-            callback({ success: false, error: error, user });
-        }
-    });
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
 }
-
-/** Initiate sign-out (non-blocking). */
-export function initiateSignOut(authInstance: Auth, callback?: () => void): void {
-    signOut(authInstance)
-    .then(() => {
-        if (callback) callback();
-    })
-    .catch(error => {
-        console.error("Sign out error:", error);
-    });
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

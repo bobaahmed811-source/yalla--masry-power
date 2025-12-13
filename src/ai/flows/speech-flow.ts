@@ -1,111 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-'use server';
-/**
- * @fileOverview A Text-to-Speech (TTS) AI flow.
- *
- * This file defines the AI logic for a TTS agent that converts a given
- * string of text into playable audio.
- *
- * - getSpeechAudio: The main server action that invokes the Genkit flow.
- */
-
-import { ai } from '@/ai/index';
-import { z } from 'zod';
-import { googleAI } from '@genkit-ai/google-genai';
-import wav from 'wav';
-
-// Define input and output schemas
-const SpeechInputSchema = z.string();
-const SpeechOutputSchema = z.object({
-  media: z.string().describe("The base64 encoded WAV audio data URI."),
-});
-
-type SpeechOutput = z.infer<typeof SpeechOutputSchema>;
-
-/**
- * Converts raw PCM audio buffer to a base64 encoded WAV data URI.
- * @param pcmData The raw PCM audio data from the model.
- * @param channels Number of audio channels.
- * @param rate Sample rate.
- * @param sampleWidth Sample width in bytes.
- * @returns A promise that resolves to the base64 encoded WAV string.
- */
-async function toWav(
-  pcmData: Buffer,
-  channels = 1,
-  rate = 24000,
-  sampleWidth = 2
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const writer = new wav.Writer({
-      channels,
-      sampleRate: rate,
-      bitDepth: sampleWidth * 8,
-    });
-
-    const bufs: any[] = [];
-    writer.on('error', reject);
-    writer.on('data', (d) => {
-      bufs.push(d);
-    });
-    writer.on('end', () => {
-      resolve(Buffer.concat(bufs).toString('base64'));
-    });
-
-    writer.write(pcmData);
-    writer.end();
-  });
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+  }
 }
 
-/**
- * Defines the main Genkit flow for Text-to-Speech.
- * This flow takes a text query, generates audio using a TTS model,
- * converts it to WAV format, and returns it as a data URI.
- */
-const speechFlow = ai.defineFlow(
-  {
-    name: 'speechFlow',
-    inputSchema: SpeechInputSchema,
-    outputSchema: SpeechOutputSchema,
-  },
-  async (query) => {
-    const { media } = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
-      config: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Algenib' }, // A suitable voice
-          },
-        },
-      },
-      prompt: query,
-    });
-
-    if (!media) {
-      throw new Error('No media was returned from the TTS model.');
-    }
-
-    // The model returns a data URI with raw PCM data, which we need to convert.
-    const pcmAudioBuffer = Buffer.from(
-      media.url.substring(media.url.indexOf(',') + 1),
-      'base64'
-    );
-    
-    const wavBase64 = await toWav(pcmAudioBuffer);
-
-    return {
-      media: 'data:audio/wav;base64,' + wavBase64,
-    };
+@layer base {
+  * {
+    @apply border-border;
   }
-);
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-/**
- * The server action wrapper for the TTS Genkit flow.
- * This function is called from the client-side to execute TTS.
- * @param text The text to convert to speech.
- * @returns The AI-generated audio as a data URI or an error.
- */
-export async function getSpeechAudioFlow(text: string): Promise<SpeechOutput> {
-  return await speechFlow(text);
+/* Yalla Masry Academy Styles */
+body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
+
+:root {
+    --nile-dark: #0d284e;
+    --nile-blue: #0b4e8d;
+    --gold-accent: #FFD700;
+    --sand-ochre: #d6b876;
+    --dark-granite: #2a2a2a;
+}
+
+.royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
+.bg-nile-dark { background-color: var(--nile-dark); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.cta-button {
+    background-color: var(--gold-accent);
+    color: var(--dark-granite);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.cta-button:hover:not(:disabled) {
+    background-color: #e5b800;
+    transform: translateY(-2px);
+}
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
