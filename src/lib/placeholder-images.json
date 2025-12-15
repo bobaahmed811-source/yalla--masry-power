@@ -41,6 +41,48 @@
       "description": "Default user avatar, a pharaoh icon",
       "imageUrl": "https://images.unsplash.com/photo-1636377985931-898218afd306?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjU0ODExODV8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
+    },
+    {
+      "id": "cat-guide",
+      "description": "Cartoon pharaoh cat character",
+      "imageUrl": "https://images.unsplash.com/photo-1739513261094-ba34a1c9e307?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjYXJ0b29uJTIwY2F0fGVufDB8fHx8MTc2NTY5ODM0MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cartoon cat"
+    },
+    {
+      "id": "animal-cat",
+      "description": "A cute cat",
+      "imageUrl": "https://images.unsplash.com/photo-1611267254323-4db7b39c732c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjdXRlJTIwY2F0fGVufDB8fHx8MTc2NTcxNTAwMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cute cat"
+    },
+    {
+      "id": "animal-dog",
+      "description": "A friendly dog",
+      "imageUrl": "https://images.unsplash.com/photo-1744098349414-dc4a7030ac94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZnJpZW5kbHklMjBkb2d8ZW58MHx8fHwxNzY1ODExMzc4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "friendly dog"
+    },
+    {
+      "id": "animal-horse",
+      "description": "A majestic horse",
+      "imageUrl": "https://images.unsplash.com/photo-1758573951518-6a096db4f818?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYWplc3RpYyUyMGhvcnNlfGVufDB8fHx8MTc2NTgxMTM3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "majestic horse"
+    },
+    {
+      "id": "animal-donkey",
+      "description": "A funny donkey",
+      "imageUrl": "https://images.unsplash.com/photo-1667070667413-e9bd1686967a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmdW5ueSUyMGRvbmtleXxlbnwwfHx8fDE3NjU4MTEzNzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "funny donkey"
+    },
+    {
+      "id": "animal-camel",
+      "description": "A desert camel",
+      "imageUrl": "https://images.unsplash.com/photo-1518978288375-f36cefcc992e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxkZXNlcnQlMjBjYW1lbHxlbnwwfHx8fDE3NjU4MTEzNzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "desert camel"
+    },
+    {
+      "id": "animal-duck",
+      "description": "A cute duckling",
+      "imageUrl": "https://images.unsplash.com/photo-1686483286920-15e154b18d32?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjdXRlJTIwZHVja2xpbmd8ZW58MHx8fHwxNzY1ODExMzc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cute duckling"
     }
   ]
 }
